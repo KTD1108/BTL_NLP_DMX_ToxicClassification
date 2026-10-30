@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# PyTorch models / Checkpoints nặng
+*.pt
+*.pth
+*.bin
+*.weights
+*.onnx
+models/
+
+# Dữ liệu gốc
+raw/
+*.tar.gz
+
+# Temporary / Scratch files
+scratch/
+check_*.py
+inspect_*.py
+test_*.py
+simulate_*.py
+ai_*.py
+results/ai_test_set_toxic_analysis.csv
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+~$*.xlsx
