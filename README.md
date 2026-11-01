@@ -93,8 +93,7 @@ Kết quả sẽ tự động lưu vào thư mục `results/`:
 │   ├── tv1_svm_test_predictions.csv  # Nhãn dự đoán SVM trên tập Test
 │   ├── tv1_svm_confusion_matrices.png# Biểu đồ Ma trận nhầm lẫn SVM
 │   ├── tv1_svm_top_features.png      # Biểu đồ Top trọng số đặc trưng SVM
-│   ├── human_vs_ai_agreement.csv     # Phân tích đối sánh Con người vs AI (2.000 mẫu)
-│   └── ch*.png                       # Thẻ đồ họa học thuật cho Báo cáo
+│   └── human_vs_ai_agreement.csv     # Phân tích đối sánh Con người vs AI (2.000 mẫu)
 ├── nlp_utils.py                      # Pipeline tiền xử lý văn bản tiếng Việt dùng chung
 ├── build_full_datasets.py            # Kịch bản chia tách bộ 3 Train/Val/Test
 ├── 3b_train_svm.py                   # Mã nguồn huấn luyện & tinh chỉnh Linear SVM (TV1)
