@@ -28,6 +28,7 @@ test_*.py
 simulate_*.py
 ai_*.py
 results/ai_test_set_toxic_analysis.csv
+results/ch*.png
 
 # OS / Editor
 .DS_Store
