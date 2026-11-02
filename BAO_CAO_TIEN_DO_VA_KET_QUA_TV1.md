@@ -159,17 +159,18 @@ Toàn bộ các file trong kho lưu trữ đã được kiểm định, dọn s�
 | **Dữ liệu kiểm thử** | [`data/test.csv`](file:///d:/vanban_btl1/data/test.csv) | 2.000 mẫu Test gán tay chuẩn hóa Phương án 1, 40 mẫu Toxic (2.00%). |
 | **Lưu vết gán nhãn** | [`data/tap_test_2000_can_gan_tay.xlsx`](file:///d:/vanban_btl1/data/tap_test_2000_can_gan_tay.xlsx) | Lưu đầy đủ 4 cột gán tay `nhan_TV1`..`nhan_TV4` và cột chốt `nhan_chot`. |
 | **Đối sánh AI** | [`results/human_vs_ai_agreement.csv`](file:///d:/vanban_btl1/results/human_vs_ai_agreement.csv) | File chi tiết 2.000 câu đối sánh Người vs AI (96.75% đồng thuận, lưu vết 65 ca lệch). |
-| **Mã nguồn huấn luyện** | [`3b_train_svm.py`](file:///d:/vanban_btl1/3b_train_svm.py) | Script FeatureUnion 3 nhánh, GridSearchCV 5-folds và Auto Threshold Tuning. |
+| **Mã nguồn huấn luyện** | [`3b_train_svm.py`](file:///d:/vanban_btl1/3b_train_svm.py) | Script đối sánh 3 biến thể Linear SVM (BoW, TF-IDF đơn, FeatureUnion nâng cấp). |
 | **Model Checkpoint** | [`models/best_svm_pipeline.joblib`](file:///d:/vanban_btl1/models/) | Pipeline đóng gói đầy đủ cả trích xuất đặc trưng và mô hình LinearSVC đã tối ưu. |
-| **Kết quả dự đoán** | [`results/tv1_svm_test_predictions.csv`](file:///d:/vanban_btl1/results/tv1_svm_test_predictions.csv) | Bảng dự đoán chi tiết 2.000 mẫu Test kèm điểm số decision score và nhãn ở 2 ngưỡng. |
-| **Bảng số liệu** | [`results/tv1_svm_metrics.csv`](file:///d:/vanban_btl1/results/tv1_svm_metrics.csv) | Bảng số liệu hiệu năng chi tiết ở cả 2 cấu hình ngưỡng. |
-| **Đồ họa báo cáo** | [`results/tv1_svm_confusion_matrices.png`](file:///d:/vanban_btl1/results/tv1_svm_confusion_matrices.png)<br>[`results/tv1_svm_top_features.png`](file:///d:/vanban_btl1/results/tv1_svm_top_features.png) | 2 biểu đồ trực quan độ phân giải cao 300 DPI phục vụ chèn vào file Word báo cáo. |
+| **Kết quả dự đoán nội bộ** | [`results/tv1_svm_test_predictions.csv`](file:///d:/vanban_btl1/results/tv1_svm_test_predictions.csv) | Bảng dự đoán chi tiết 2.000 mẫu Test kèm điểm số decision score và nhãn ở các cấu hình. |
+| **Bảng số liệu đối sánh** | [`results/tv1_svm_metrics.csv`](file:///d:/vanban_btl1/results/tv1_svm_metrics.csv) | Bảng số liệu hiệu năng chi tiết cả 3 biến thể mô hình Linear SVM. |
+| **File nộp cho TV4** | [`results/predictions/`](file:///d:/vanban_btl1/results/predictions/) | 3 cặp file CSV và JSON thông tin mô hình (`svm_bow`, `svm_tfidf_single`, `svm_tfidf`) đạt chuẩn `QUY_UOC_FILE_DU_DOAN.md`. |
+| **Đồ họa báo cáo** | [`results/tv1_svm_confusion_matrices.png`](file:///d:/vanban_btl1/results/tv1_svm_confusion_matrices.png)<br>[`results/tv1_svm_top_features.png`](file:///d:/vanban_btl1/results/tv1_svm_top_features.png) | Các biểu đồ trực quan độ phân giải cao 300 DPI phục vụ chèn vào file Word báo cáo. |
 
 ---
 
-## 6. ĐỀ XUẤT BƯỚC TIẾP THEO CHO CẢ NHÓM
+## 6. TIẾN ĐỘ & PHỐI HỢP CÔNG VIỆC TRONG NHÓM
 
-1. **Thành viên 1 (Bạn):** Hoàn thành xuất sắc nhiệm vụ. Có thể commit toàn bộ mã nguồn và kết quả lên nhánh `feature/data-sampling-eda`.
-2. **Hỗ trợ Thành viên 2 (Naive Bayes):** Sử dụng chung bộ 3 dữ liệu `train.csv`, `val.csv`, `test.csv` và module `nlp_utils.py` để triển khai mô hình `3a_train_naive_bayes.py` (MultinomialNB trên BoW và TF-IDF).
-3. **Hỗ trợ Thành viên 3 (BiLSTM):** Khởi tạo từ điển nhúng Word Embeddings và mạng nơ-ron hồi quy hai chiều BiLSTM trên PyTorch (`3c_train_bilstm.py`).
-4. **Hỗ trợ Thành viên 4 (Evaluation & Report):** Lấy kết quả của cả 3 thành viên để vẽ biểu đồ tổng hợp đối sánh 5 mô hình và soạn thảo Báo cáo Word chuẩn PTIT 3 chương.
+1. **Thành viên 1 (Kiều Tiến Đạt):** Hoàn thành toàn bộ nhiệm vụ được giao (Quản trị dữ liệu, tiền xử lý, huấn luyện đối sánh các biến thể Linear SVM, xuất file nộp TV4).
+2. **Thành viên 2 (Naive Bayes):** Sử dụng chung bộ 3 dữ liệu `train.csv`, `val.csv`, `test.csv` và module `nlp_utils.py` để triển khai mô hình `3a_train_naive_bayes.py` (MultinomialNB trên BoW và TF-IDF).
+3. **Thành viên 3 (BiLSTM):** Khởi tạo từ điển nhúng Word Embeddings và mạng nơ-ron hồi quy hai chiều BiLSTM trên PyTorch (`3c_train_bilstm.py`).
+4. **Thành viên 4 (Evaluation & Report):** Lấy kết quả của cả 3 thành viên trong `results/predictions/` để chạy `4_model_evaluation.py`, đối sánh 5 mô hình và hoàn thiện Báo cáo Word chuẩn PTIT 3 chương.

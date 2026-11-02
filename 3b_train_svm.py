@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-THÀNH VIÊN 1: DATA ARCHITECT & SVM SPECIALIST
-Script: 3b_train_svm.py (Phiên bản toàn diện: Đối sánh BoW vs TF-IDF đơn vs TF-IDF Nâng cấp)
+BÀI TẬP LỚN 1 - XỬ LÝ NGÔN NGỮ TỰ NHIÊN (NLP)
+Thành viên 1: Kiều Tiến Đạt (B23DCKH020) - Data Architect & SVM Specialist
+Script: 3b_train_svm.py
 
-Nhiệm vụ kỹ thuật hoàn chỉnh:
-1. Huấn luyện Mô hình Cơ sở 1: BoW (CountVectorizer) + Linear SVM (class_weight='balanced').
-2. Huấn luyện Mô hình Cơ sở 2: TF-IDF đơn (TfidfVectorizer) + Linear SVM (class_weight='balanced').
-3. Huấn luyện Mô hình Nâng cấp 3: FeatureUnion 3 nhánh (Word TF-IDF + Char_wb TF-IDF + Lexicon)
-   kết hợp GridSearchCV (5-Folds) và Auto Decision Threshold Tuning trên tập Train.
-4. Đánh giá đối sánh toàn diện cả 3 mô hình trên tập Test độc lập (test.csv - 2.000 mẫu).
-5. Lưu trữ Artifacts: Models (.joblib), CSV dự đoán, CSV chỉ số và biểu đồ Confusion Matrix (300 DPI).
+Mục tiêu kỹ thuật:
+1. Huấn luyện mô hình cơ sở 1: BoW (CountVectorizer) + Linear SVM (class_weight='balanced').
+2. Huấn luyện mô hình cơ sở 2: TF-IDF đơn (TfidfVectorizer) + Linear SVM (class_weight='balanced').
+3. Huấn luyện mô hình nâng cấp: FeatureUnion 3 nhánh (Word TF-IDF + Char_wb TF-IDF + Lexicon)
+   kết hợp GridSearchCV (5-Folds) và tối ưu ngưỡng quyết định trên tập Train.
+4. Đánh giá đối sánh trên tập Test chuẩn vàng (data/test.csv - 2.000 mẫu).
+5. Xuất các file dự đoán chuẩn hóa nộp cho TV4 theo quy ước tại QUY_UOC_FILE_DU_DOAN.md.
 """
 
 import os
@@ -433,5 +434,5 @@ with open(os.path.join(pred_dir, 'svm_tfidf_single_info.json'), 'w', encoding='u
 print(" -> Đã xuất: results/predictions/svm_tfidf_single.csv & svm_tfidf_single_info.json")
 
 print("\n" + "=" * 88)
-print("     HOÀN TẤT ĐỐI SÁNH ĐẦY ĐỦ CÁC BIẾN THỂ & ĐÃ NỘP FILE DỰ ĐOÁN CHO TV4!")
+print("     HOÀN THÀNH HUẤN LUYỆN ĐỐI SÁNH VÀ XUẤT PREDICTIONS NỘP THÀNH VIÊN 4.")
 print("=" * 88)
