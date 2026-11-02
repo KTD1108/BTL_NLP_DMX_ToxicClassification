@@ -1,4 +1,4 @@
-stt,review_id,so_sao,noi_dung_goc,noi_dung_chuan_hoa_slang,true_label,pred_bow_svm,pred_tfidf_single_svm,decision_score_upgraded,pred_upgraded_th0,pred_upgraded_opt
+﻿stt,review_id,so_sao,noi_dung_goc,noi_dung_chuan_hoa_slang,true_label,pred_bow_svm,pred_tfidf_single_svm,decision_score_upgraded,pred_upgraded_th0,pred_upgraded_opt
 1,58896069,2,"Chính sách bảo hành và hỗ trợ đồng bào của hãng đối với trường hợp máy bị ngập nước do thiên tai bão lũ rất kém so với các hãng khác, nên cân nhắc khi mua các sp của hãng này.",chính_sách bảo_hành hỗ_trợ đồng_bào hãng đối_với trường_hợp máy bị ngập nước thiên_tai bão lũ rất kém so hãng khác cân_nhắc mua sản_phẩm hãng,0,0,0,-0.4416,0,0
 2,33055842,4,"Mới đầu đun lúc nhấc nồi ra thì kiềng dính vào đay nồi luôn. Cũng khá ổn, lửa xanh, nấu nhanh. Bếp dễ vệ sinh.",mới_đầu đun nhấc nồi kiềng dính đay nồi luôn khá ổn lửa xanh nấu nhanh bếp dễ vệ_sinh,0,0,0,-1.2442,0,0
 3,54635288,4,"Hình thức đẹp, âm thanh tốt.",hình_thức đẹp âm_thanh tốt,0,0,0,-1.6509,0,0

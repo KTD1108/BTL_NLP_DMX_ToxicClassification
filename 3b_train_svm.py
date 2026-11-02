@@ -341,13 +341,13 @@ df_pred_test = pd.DataFrame({
     'pred_upgraded_opt': eval_upgraded_optimal['_raw_preds']
 })
 pred_path = 'results/tv1_svm_test_predictions.csv'
-df_pred_test.to_csv(pred_path, index=False, encoding='utf-8')
+df_pred_test.to_csv(pred_path, index=False, encoding='utf-8-sig')
 print(f" -> Đã lưu kết quả dự đoán chi tiết 2.000 mẫu: {pred_path}")
 
 # Lưu metrics CSV
 summary_path = 'results/tv1_svm_metrics.csv'
 df_save_metrics = df_summary.drop(columns=['_raw_preds', '_raw_cm'], errors='ignore')
-df_save_metrics.to_csv(summary_path, index=False, encoding='utf-8')
+df_save_metrics.to_csv(summary_path, index=False, encoding='utf-8-sig')
 print(f" -> Đã lưu bảng tổng kết metrics: {summary_path}")
 
 # -----------------------------------------------------------------------------
@@ -365,7 +365,7 @@ pd.DataFrame({
     'label': y_test,
     'score': scores_bow,
     'pred': (scores_bow >= th_bow).astype(int)
-}).to_csv(os.path.join(pred_dir, 'svm_bow.csv'), index=False, encoding='utf-8')
+}).to_csv(os.path.join(pred_dir, 'svm_bow.csv'), index=False, encoding='utf-8-sig')
 
 with open(os.path.join(pred_dir, 'svm_bow_info.json'), 'w', encoding='utf-8') as f:
     json.dump({
@@ -390,7 +390,7 @@ pd.DataFrame({
     'label': y_test,
     'score': scores_tfidf,
     'pred': (scores_tfidf >= th_tfidf).astype(int)
-}).to_csv(os.path.join(pred_dir, 'svm_tfidf.csv'), index=False, encoding='utf-8')
+}).to_csv(os.path.join(pred_dir, 'svm_tfidf.csv'), index=False, encoding='utf-8-sig')
 
 with open(os.path.join(pred_dir, 'svm_tfidf_info.json'), 'w', encoding='utf-8') as f:
     json.dump({
@@ -415,7 +415,7 @@ pd.DataFrame({
     'label': y_test,
     'score': scores_tfidf_single,
     'pred': (scores_tfidf_single >= th_single).astype(int)
-}).to_csv(os.path.join(pred_dir, 'svm_tfidf_single.csv'), index=False, encoding='utf-8')
+}).to_csv(os.path.join(pred_dir, 'svm_tfidf_single.csv'), index=False, encoding='utf-8-sig')
 
 with open(os.path.join(pred_dir, 'svm_tfidf_single_info.json'), 'w', encoding='utf-8') as f:
     json.dump({

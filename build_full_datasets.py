@@ -130,7 +130,7 @@ df_test_full = pd.DataFrame(test_rows)
 
 # Lưu lại tap_test_2000_can_gan_tay.xlsx và .csv
 df_test_full.to_excel('data/tap_test_2000_can_gan_tay.xlsx', index=False)
-df_test_full.to_csv('data/tap_test_2000_can_gan_tay.csv', index=False, encoding='utf-8')
+df_test_full.to_csv('data/tap_test_2000_can_gan_tay.csv', index=False, encoding='utf-8-sig')
 print(" -> Đã cập nhật data/tap_test_2000_can_gan_tay.xlsx & .csv với đầy đủ nhãn 4 thành viên và nhan_chot!")
 
 
@@ -149,7 +149,7 @@ df_test_clean = pd.DataFrame({
     'label': df_test_full['nhan_chot']
 })
 
-df_test_clean.to_csv('data/test.csv', index=False, encoding='utf-8')
+df_test_clean.to_csv('data/test.csv', index=False, encoding='utf-8-sig')
 print(f" -> Đã xuất data/test.csv: {df_test_clean.shape[0]} dòng, {df_test_clean.shape[1]} cột. Toxic = {df_test_clean['label'].sum()} ({df_test_clean['label'].mean()*100:.2f}%)")
 
 
@@ -185,7 +185,7 @@ df_agree = pd.DataFrame({
     'is_agreement': (y_human == y_ai).astype(int),
     'agreement_type': agreement_types
 })
-df_agree.to_csv('results/human_vs_ai_agreement.csv', index=False, encoding='utf-8')
+df_agree.to_csv('results/human_vs_ai_agreement.csv', index=False, encoding='utf-8-sig')
 print(" -> Đã lưu results/human_vs_ai_agreement.csv phục vụ báo cáo!")
 
 
