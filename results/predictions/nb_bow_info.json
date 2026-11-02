@@ -1,0 +1,15 @@
+{
+  "nguoi_phu_trach": "TV2",
+  "threshold": 0.75,
+  "chon_nguong_tren": "train_cv",
+  "sieu_tham_so": {
+    "alpha": 0.1,
+    "ngram_range": [
+      1,
+      1
+    ],
+    "min_df": 1
+  },
+  "random_seed": 42,
+  "ghi_chu": "BoW + MultinomialNB; ngưỡng và tham số chọn theo Macro F1 trên 5-fold CV của train"
+}

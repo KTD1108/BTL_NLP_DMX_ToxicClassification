@@ -1233,7 +1233,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1232,54029384,4,"Sản phẩm rất tốt,tôi rất hài lòng",0,0,0.0206814855337142,1,Agree_NonToxic
 1233,55455833,4,tiện đơn giản xài nhanh gọn dễ sử dụng sẽ giới thiệu bạn bè người thân,0,0,0.01050681527704,1,Agree_NonToxic
 1234,56096400,5,Quat chay mạnh ok thich mua lan sao,0,0,0.0141218295320868,1,Agree_NonToxic
-1235,50668500,3,Tại sao máy t mua online trên áp thang 2-2022 mà lại xuất kho tháng 2-2021 Phải chăng máy cũ đã qua xử dụng. Đứt dây điện mà đợi gần 1 tuần hãng ko liên lạc lại để xử lý.phục vụ quá tệ hãng panasonic,1,0,0.0832418948411941,0,Human1_AI0
+1235,50668500,3,Tại sao máy t mua online trên áp thang 2-2022 mà lại xuất kho tháng 2-2021 Phải chăng máy cũ đã qua xử dụng. Đứt dây điện mà đợi gần 1 tuần hãng ko liên lạc lại để xử lý.phục vụ quá tệ hãng panasonic,0,0,0.0832418948411941,1,Agree_NonToxic
 1236,57295992,4,"Quạt mát, gió mạnh. Tuy nhiên bánh xe kém, k xoay k di chuyển được quạt",0,0,0.0475319623947143,1,Agree_NonToxic
 1237,54252308,4,Mới xài nên k biết bền hay không. nhưng quạt chạy êm,0,0,0.0161941275000572,1,Agree_NonToxic
 1238,53800096,5,Mua 1 cái trước tết xài rất ok nên mua thêm cái cho người thân và rất hài lòng với thái độ phục vụ của NV bên ĐMX 575A Nguyễn Ảnh Thủ đã hỗ trợ giao hàng nhanh cho mình để kịp gửi về quê đặt 19h và 21h đã giao cho mình(mặc dù trước đó đã ghé 2 ĐMX khác trên địa bàn đều nói hết hàng tại CH của mình nên không có giao kịp trong ngày),0,0,0.0128992116078734,1,Agree_NonToxic
@@ -1252,9 +1252,9 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1251,54654968,1,Sac 15tieng quạt chế độ nhẹ được 3tieng,0,0,0.0131172947585582,1,Agree_NonToxic
 1252,56374738,5,"Sài đc 4 tháng thì mn nên mua, diện tích để đồ siêu rộng, thoải mái và tiết kiệm điện hơn tủ lạnh cũ của nhà mình",0,0,0.0087441653013229,1,Agree_NonToxic
 1253,28290214,4,Quạt dùng tốt. Quạt mạnh ít ồn. Có hẹn giờ tắt. Dùng mùa nóng kèm 1 bộ phun sương tạo ẩm khá dễ chịu.,0,0,0.0522363185882568,1,Agree_NonToxic
-1254,59976726,2,"Bếp lữa đỏ xài quá hao ga, 2 tháng 1 bình ga, nấu ăn không thường. Quá thất vọng với sản phẩm này",1,0,0.3531045615673065,0,Human1_AI0
+1254,59976726,2,"Bếp lữa đỏ xài quá hao ga, 2 tháng 1 bình ga, nấu ăn không thường. Quá thất vọng với sản phẩm này",0,0,0.3531045615673065,1,Agree_NonToxic
 1255,55639282,5,Để đổi lại nhanh hết pin quá,0,0,0.0341536663472652,1,Agree_NonToxic
-1256,54308574,1,"Quá tệ, TGDD tốt bao nhiêu thì DMX tệ bấy nhiêu",1,1,0.6177610158920288,1,Agree_Toxic
+1256,54308574,1,"Quá tệ, TGDD tốt bao nhiêu thì DMX tệ bấy nhiêu",0,1,0.6177610158920288,0,Human0_AI1
 1257,57149755,2,"Quạt mua 2 ngày về là hư chế độ làm mát rồi, cần kĩ thuật đến kiểm tra và sửa hoặc đổi trả trong thời gian bảo hành 1 đổi 1",0,0,0.0130403591319918,1,Agree_NonToxic
 1258,52611420,5,Ok.gió mạnh .không ồn.ai có nhu cầu nên mua,0,0,0.012477203272283,1,Agree_NonToxic
 1259,47503308,5,"Hoạt động tốt,máy chạy êm,tiết kiệm điện,giá hợp lý.Nhân viên tư vấn nhiệt tình,chu đáo.Sẽ giới thiệu cho bạn bè và người thân sử dụng!!!!",0,0,0.0058103138580918,1,Agree_NonToxic
@@ -1266,7 +1266,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1265,53768058,4,Máy hút khoẻ . Dây nguồn dài. Gậy hút hơi lỏng lẻo khi kéo dài. Nhân viên tư vấn nhiệt tình. Giao hàng nhanh. Mọi người nên mua hàng DMX!,0,0,0.0156706124544143,1,Agree_NonToxic
 1266,55816220,2,Sạc nhanh mà sạc gần 2h mới đầy pin v ak,0,0,0.007045270409435,1,Agree_NonToxic
 1267,55845366,5,Sp tốt,0,0,0.0166339613497257,1,Agree_NonToxic
-1268,48863668,2,"đã mua rất nhiều đồ của đmx và thực sự thấy chán.bếp tự động tắt , bật. nồi chảo mua kèm theo thì cháy , nung. mất an toàn. chế độ bảo hành thì hời hợt. quá thất vọng",1,1,0.8524611592292786,1,Agree_Toxic
+1268,48863668,2,"đã mua rất nhiều đồ của đmx và thực sự thấy chán.bếp tự động tắt , bật. nồi chảo mua kèm theo thì cháy , nung. mất an toàn. chế độ bảo hành thì hời hợt. quá thất vọng",0,1,0.8524611592292786,0,Human0_AI1
 1269,59547960,5,tivi tốt,0,0,0.0300112310796976,1,Agree_NonToxic
 1270,57504925,3,hộp đựng tai nghe bị xước dù mới mở hộp,0,0,0.0259723216295242,1,Agree_NonToxic
 1271,57012092,5,"Thiết kế đẹp, vỏ nhựa nhám ko bám mồ hôi vân tay, tai nghe đeo khá vừa vặn và ko bị đau tai, pin khỏe nghe liên tục tai nghe đc khoảng 4h với âm lượng 50%, hộp sạc thì được hơn 1 ngày.Âm thanh gốc nhiều bass hợp nghe EDM và Remix hơn, nếu nghe nhạc Pop thì mọi người nên chỉnh sang chế độ khác nếu điện thoại có dolby atmos, máy mình là Reno5 nên có thể chỉnh đc trong phần cài đặtĐiểm trừ là thi thoảng mở hộp ra kết nối thì 1 bên tai ko nghe đc, phải reset và kết nối lại từ đầu. Vì là dòng mới nên tai này chưa được app Baseus hỗ trợ, chờ 1 thời gian nữa xem sao.Nhìn chung vs mức giá này thì chất lượng quá tốt r nên ko đòi hỏi thêm.",0,0,0.0225241612643003,1,Agree_NonToxic
@@ -1339,7 +1339,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1338,47359028,1,Mua cái trúng cái loa bass cứ ù ù ta nói nó tức Mọi người đừng mua loa này phí tiền,0,1,0.6380752325057983,0,Human0_AI1
 1339,58601608,5,"Sản phẩm tốt, phù hợp với samsung z fold 7 của mình.sạc nhanh nhưng không nóng máy tốt, sẽ giới thiệu cho bạn bè đồng nghiệp",0,0,0.0116698117926716,1,Agree_NonToxic
 1340,56212628,2,Tủ mới mua giờ bị hỏng làm sao liên hệ bảo hành shop,0,0,0.0092533575370907,1,Agree_NonToxic
-1341,57492789,1,"Một sản phẩm trải nghiệm cực kỳ, cực kỳ tệ Đồng hồ được bảo hành 01 năm theo chính sách của hãng nhưng mới dùng hơn 5 tháng, bé rửa tay bị vô nước, gửi hãng bảo hành thì nói không sửa được, lại đề nghị khách hàng thu cũ bù mới với số tiền tương đương sản phẩm mới mà TGDĐ đang bán. Vậy có khác gì kêu khách hàng mày mua cái mới dùng đi. Sẽ không bao giờ mua thêm sản phẩm nào từ Kidcare nữa. Mọi người cân nhắc trước khi mua bất cứ sản phẩm của hãng.",1,0,0.354860782623291,0,Human1_AI0
+1341,57492789,1,"Một sản phẩm trải nghiệm cực kỳ, cực kỳ tệ Đồng hồ được bảo hành 01 năm theo chính sách của hãng nhưng mới dùng hơn 5 tháng, bé rửa tay bị vô nước, gửi hãng bảo hành thì nói không sửa được, lại đề nghị khách hàng thu cũ bù mới với số tiền tương đương sản phẩm mới mà TGDĐ đang bán. Vậy có khác gì kêu khách hàng mày mua cái mới dùng đi. Sẽ không bao giờ mua thêm sản phẩm nào từ Kidcare nữa. Mọi người cân nhắc trước khi mua bất cứ sản phẩm của hãng.",0,0,0.354860782623291,1,Agree_NonToxic
 1342,56866384,4,"Các bác đã dùng qua cho e hỏi chút với ạ, bếp nhà e vùng nấu bên phải sao nó cứ hay nhảy số, đang đun ở mức 8 thì đc tí nó nhảy sang mức 2 trong đó nước vẫn chưa sôi. Cho e hỏi cách khắc phục với ạ",0,0,0.0224764682352542,1,Agree_NonToxic
 1343,57272612,3,Mua dùng 3 tháng nay cóc k sạc được luôn,0,0,0.0152470748871564,1,Agree_NonToxic
 1344,55621452,3,Máy tạm ổn trong tầm giá. Muốn xay cá phải chọn loại khác,0,0,0.0118640772998332,1,Agree_NonToxic
@@ -1436,7 +1436,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1435,59747120,5,"ket noi khong co do tre, nghe nhac em",0,0,0.072397232055664,1,Agree_NonToxic
 1436,58494914,1,"Tôi sẽ không bao giờ quay lại mua thêm bất cứ sản phẩn nào của đmx,tgdd và của mobell, tôi đã mua hàng ở đây trong vòng gần 10 năm vì ngày trước dịch vụ bảo hành ở đây quá tốt, nhưng giờ nó rất tệ, tôi mua còn máy này cho bố mẹ dùng chưa được 1 năm thì máy hư, đem ra đi bảo hành và nhận lại máy vẫn hư, quá tệ",0,0,0.2868458926677704,1,Agree_NonToxic
 1437,55856199,3,loa này mình mua được 3 tháng khi mở bluetooth thỳ không thấy dè nhưng khi cắm vào PC thấy có hiện tượng dè.. mọi người có gặp trường hợp nào như vậy không,0,0,0.0288493111729621,1,Agree_NonToxic
-1438,59384548,1,"Rất tệ, giá mắc hơn junger, không nấu liu riu được, chỉnh mức nhiệt nhỏ nhất 60độ vẫn sôi trào.",1,0,0.2560607492923736,0,Human1_AI0
+1438,59384548,1,"Rất tệ, giá mắc hơn junger, không nấu liu riu được, chỉnh mức nhiệt nhỏ nhất 60độ vẫn sôi trào.",0,0,0.2560607492923736,1,Agree_NonToxic
 1439,55455891,4,su dung binh thường,0,0,0.0141605725511908,1,Agree_NonToxic
 1440,55304796,5,Nhìn sang lắm đa. Máy chạy êm. Trước mắt cho 5 sao. Mốt mà có vấn đề thay đổi lại kaka,0,0,0.005817184690386,1,Agree_NonToxic
 1441,55845304,5,"sản phẩm rất tốt, ngăn đông làm đá tốt",0,0,0.0384639538824558,1,Agree_NonToxic
@@ -1454,10 +1454,10 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1453,56913774,4,"Quạt tôi sao đang chạy nó tự động giảm dần về số nhỏ , mình có tăng lên rồi giảm xuống",0,0,0.0377763733267784,1,Agree_NonToxic
 1454,55775304,5,Tốt nhất,0,0,0.0179798454046249,1,Agree_NonToxic
 1455,55272993,4,Dùng ok,0,0,0.0162369906902313,1,Agree_NonToxic
-1456,53477425,1,"Cảm thấy rất rất tệ, chưa đầy 1 tháng đổi 2 cái loa còn bị lỗi, thái độ khi gọi lên nhân viên nói chuyện ko ưa nổi. Quá tệ",1,1,0.7921977639198303,1,Agree_Toxic
+1456,53477425,1,"Cảm thấy rất rất tệ, chưa đầy 1 tháng đổi 2 cái loa còn bị lỗi, thái độ khi gọi lên nhân viên nói chuyện ko ưa nổi. Quá tệ",0,1,0.7921977639198303,0,Human0_AI1
 1457,52284135,5,"Quạt chạy êm, mát, nên mua",0,0,0.0119463987648487,1,Agree_NonToxic
 1458,51893088,5,"Bếp nhỏ gọn, đẹp, sử dụng dễ dàng. Nhân viên giao hàng nhiệt tình dễ thương.",0,0,0.0072571695782244,1,Agree_NonToxic
-1459,59320250,1,"Sản phẩm quá tệ , nhân viên đổi trả để bảo hành nói ngang , thái độ mới ghê , xài ba lần đổi trả lần 2 , nghe nói lần 3 bị lỗi không bảo hành , trong khi đó sản phẩm bảo hàng 1 năm",1,0,0.3575946688652038,0,Human1_AI0
+1459,59320250,1,"Sản phẩm quá tệ , nhân viên đổi trả để bảo hành nói ngang , thái độ mới ghê , xài ba lần đổi trả lần 2 , nghe nói lần 3 bị lỗi không bảo hành , trong khi đó sản phẩm bảo hàng 1 năm",0,0,0.3575946688652038,1,Agree_NonToxic
 1460,53582881,3,Ga yếu,0,0,0.2889497578144073,1,Agree_NonToxic
 1461,58613740,3,"Loa nghe không hay cho lắm, chỉ tạm ổn mà thôi, nếu ai kỳ vọng cao thì chắc chắn sẽ thất vọng. Nhân viên thì nhiệt tình ạ",0,0,0.1848819851875305,1,Agree_NonToxic
 1462,59403963,2,Máy vừa lắp chảy được tí nước đã tịt. Gọi tổng đài mấy lần hẹn đến tận hôm sau. Chất lượng dịch vụ càng ngày càng tệ,0,0,0.2510774731636047,1,Agree_NonToxic
@@ -1534,7 +1534,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1533,56979396,5,Rất tốt,0,0,0.0206996221095323,1,Agree_NonToxic
 1534,57002424,1,"Mới mua gần 2 tháng bị hư nút lúc bật, điện bảo hành bảo phải gửi về hãng 10 15 ngày. gửi đi 15 ngày rồi coi lấy gì người ta nấu bảo hành mà không bảo tại nhà được mà phải cứ chuyển đi về hãng..phiền phức...sp quá tệ",0,0,0.1708539426326751,1,Agree_NonToxic
 1535,53273389,4,Cai thiện bin nữa là ok,0,0,0.0397236086428165,1,Agree_NonToxic
-1536,57799369,1,mua sản phẩm rất tệ,1,0,0.4683385193347931,0,Human1_AI0
+1536,57799369,1,mua sản phẩm rất tệ,0,0,0.4683385193347931,1,Agree_NonToxic
 1537,59284944,3,"Mình đã mua đến cái thứ 7,8 rồi,nhưng 2 cái cuối mua gần nhất k có đế để gắn kèm, k gắn đc phải để bàn",0,0,0.0219098310917615,1,Agree_NonToxic
 1538,56561192,5,"Độ bền thì chưa biết , nhưng hút wifi rất mạnh",0,0,0.0155369602143764,1,Agree_NonToxic
 1539,57063529,2,"Sạc 56 tiếng 1 lần, xong hát chỉ được 3040 phút hết, yêu cầu bảo hành gấp",0,0,0.0166498646140098,1,Agree_NonToxic
@@ -1625,7 +1625,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1624,59468884,3,Quạt thổi ra mùi nhựa khó chịu Khắc phục như nào,0,0,0.0550164841115474,1,Agree_NonToxic
 1625,55611404,5,"Tai nghe Sài rất ok nha shop ơi, giá tầm trung nhưng âm thanh thì cứ phải gọi là phiêu theo nhạc luôn, ưng quá, hứa sẽ mua hàng ủng hộ nhiều nhiều",0,0,0.0056909318082034,1,Agree_NonToxic
 1626,59460246,1,Sao máy kêu dữ vậy bạn đêm hông lấy nước cũng kêu sáng đêm,0,0,0.1489424854516983,1,Agree_NonToxic
-1627,58761207,1,Rất tệ Mua onl 15tr ra cửa hàng mua 16tr5 Vậy mở cửa hàng làm gì để khách ra mua bị đắt sao k bảo đặt onl luôn đi,1,0,0.1980967223644256,0,Human1_AI0
+1627,58761207,1,Rất tệ Mua onl 15tr ra cửa hàng mua 16tr5 Vậy mở cửa hàng làm gì để khách ra mua bị đắt sao k bảo đặt onl luôn đi,0,0,0.1980967223644256,1,Agree_NonToxic
 1628,56435133,5,đẹp lắm,0,0,0.0199461057782173,1,Agree_NonToxic
 1629,55124804,2,Quạt mua ngày 5/7/2023 sử dụng 1 ngày bị hỏng bánh xe/ kêu toTGDD Đổi mới. Tuy nhiên sử dụng đến ngày 10/8/2023 lại hỏng nút power.,0,0,0.0253313519060611,1,Agree_NonToxic
 1630,53058031,1,Ủa tgdd lừa đảo hay gì ? Ghi pin 10000mah mà tôi cắm sạc cả đêm đèn vàng báo đầy pin . Xong mang lên núi sạc ip12prm lúc này đt còn 15% pin . Sạc 1 lần dc đầy pin tới 80% roi ngưng . Xong roi tới chiều đt còn 9% thì tôi cắm sạc dc tới 51% thì ngưng kêu hết pin . Ủa tính ra pin dc có chưa tới 5000mah nữa . Mà dám ghi ảo như vậy phiền hà cho tôi . Thà mắc mắc tí mà dung lượng pin ok ng ta mua . Ghi giá ảo roi bán pin ảo bực cả mình . Thà lên lazada mua cho roi . Tưởng tgdd uy tín như nào,1,0,0.382602721452713,0,Human1_AI0
@@ -1829,13 +1829,13 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1828,56631124,5,"Mới dùng khoảng 2 tháng, máy chạy êm, giặt sạch, nước yếu mà máy vẫn hoạt động bình thường",0,0,0.0216445978730916,1,Agree_NonToxic
 1829,53603256,4,Giặt sạch,0,0,0.0450460352003574,1,Agree_NonToxic
 1830,56704491,5,Ok quạt ổn định nha. Giá rẻ nữa,0,0,0.0075376396998763,1,Agree_NonToxic
-1831,58950956,1,"sp chất lượng kém. trải nghiệm 1 tuần rất tệ, lúc thì mất âm pass, lúc thì nv nói loa dòng này kén app nghe nhạc loa mà cũng kén app nghe nhạc là sao, Bây giờ thì là loa thanh và sub k kết nối dc vs nhau, tự mất kết nối. Gọi tđ bảo hành thì fai chờ hơn 8 tiếng mới có nv gọi.. Làm ăn chậm chạp, hỗ trợ khách hàng quá tệ nha đmx. Bỏ tiền ra mua loa để thư giãn mà rất mất thời gian chờ đợi, Sp kém hay lỗi thì thu hồi, đừng sale và bán cho khách",1,1,0.82200026512146,1,Agree_Toxic
+1831,58950956,1,"sp chất lượng kém. trải nghiệm 1 tuần rất tệ, lúc thì mất âm pass, lúc thì nv nói loa dòng này kén app nghe nhạc loa mà cũng kén app nghe nhạc là sao, Bây giờ thì là loa thanh và sub k kết nối dc vs nhau, tự mất kết nối. Gọi tđ bảo hành thì fai chờ hơn 8 tiếng mới có nv gọi.. Làm ăn chậm chạp, hỗ trợ khách hàng quá tệ nha đmx. Bỏ tiền ra mua loa để thư giãn mà rất mất thời gian chờ đợi, Sp kém hay lỗi thì thu hồi, đừng sale và bán cho khách",0,1,0.82200026512146,0,Human0_AI1
 1832,52469491,5,Sản phẩm dùng rất tốt,0,0,0.0201492439955472,1,Agree_NonToxic
 1833,54135676,4,SẢN PHẨ TỐT GÍA CẢ HỢP LÝ.NHÂN VIÊN TƯ VẤN NHIỆT TÌNH.KỶ THUẬTLĂP RÁP NHIỆT TÌNH TRÁCH NHIỆM CÓ TRÌNH ĐỘ,0,0,0.1038278266787529,1,Agree_NonToxic
 1834,53812718,2,"lửa nhỏ, mới mua hôm trước, hôm sau qua đổi mà bị mất tiền",0,0,0.04071931168437,1,Agree_NonToxic
 1835,59113932,5,Sp tốt. Giá cả vừa phải. Sẽ ung hộ tiế,0,0,0.0078025250695645,1,Agree_NonToxic
 1836,58487247,5,sản phẩm dùng tốt,0,0,0.027918916195631,1,Agree_NonToxic
-1837,57235401,1,"không nên mua, bảo hành đổi 3 lần rồi, cứ vài tuần lại câm một bên tai, mệt mỏi",1,0,0.377981424331665,0,Human1_AI0
+1837,57235401,1,"không nên mua, bảo hành đổi 3 lần rồi, cứ vài tuần lại câm một bên tai, mệt mỏi",0,0,0.377981424331665,1,Agree_NonToxic
 1838,54459966,4,Bếp dùng tốt giao hàng nhanh.,0,0,0.0122800394892692,1,Agree_NonToxic
 1839,52382985,4,Nồi cơm chất lượng khá tốt,0,0,0.0124420281499624,1,Agree_NonToxic
 1840,57000763,1,Cơm nấu nồi kg tự bật nút phải đứng canh cơm chín để bật nút,0,0,0.0368051417171955,1,Agree_NonToxic
@@ -1923,7 +1923,7 @@ stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,ag
 1922,55794111,5,"Bỏ tiền ra mua loa sony mới thấy xứng đang,âm thanh nghe êm tai ,rất hay mọi người nên mua",0,0,0.0118373641744256,1,Agree_NonToxic
 1923,54179854,5,Rất là OK,0,0,0.0148952817544341,1,Agree_NonToxic
 1924,57001940,5,Máy im lạnh tốt. Nhà tôi vẫn rin dùng panasonic,0,0,0.0138082616031169,1,Agree_NonToxic
-1925,58247118,1,"Mọi người nên né, không nên mua hàng của, ĐMX",0,0,0.2650378942489624,1,Agree_NonToxic
+1925,58247118,1,"Mọi người nên né, không nên mua hàng của, ĐMX",1,0,0.2650378942489624,0,Human1_AI0
 1926,58937042,3,"Mới mua 1 tuần, vào youtube lúc được lúc không. Bên cửa hàng có thể hỗ trợ sữa lỗi hoặc đổi cái khác đc k",0,0,0.0200032759457826,1,Agree_NonToxic
 1927,53232509,1,Tôi đã gọi bảo hành và đang trong quá trình bảo hành,0,0,0.0113925207406282,1,Agree_NonToxic
 1928,56463917,4,"Vì giá rẻ nên sẽ không có cảm biến lidar vẽ bản đồ nhà. App kết nối chỉ vào điều khiển robot được khi cả 2 đều đăng nhập vào 1 mạng wifi. Hút mạnh, khá ồn. Tiền nào của đó, dùng cho phòng nhỏ. Nếu nhà lớn thì mn nên cân nhắc lựa chọn loại có cảm biến lidar nhé",0,0,0.016632305458188,1,Agree_NonToxic

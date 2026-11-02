@@ -66,8 +66,10 @@ df_10k = pd.read_csv('data/dmx_reviews_10k_raw.csv')
 prod_map = dict(zip(df_10k['review_id'], df_10k['product_id']))
 
 # Danh sách STT lỗi kỹ thuật/chê thông thường cần revert về 0 theo Phương án 1
-revert_tv3 = [1211, 1263, 1301, 1308, 1335, 1363, 1452, 1475, 1582]
-revert_tv4 = [1770, 1803, 1805, 1807, 1840, 1866, 1925, 1985]
+revert_tv3 = [1211, 1263, 1301, 1308, 1335, 1363, 1452, 1475, 1582,
+              1235, 1254, 1256, 1268, 1341, 1438, 1456, 1459, 1536]
+revert_tv4 = [1770, 1803, 1805, 1807, 1840, 1866, 1985,
+              1627, 1831, 1837]
 
 # Xây dựng bảng gán nhãn 2000 mẫu đầy đủ
 test_rows = []
