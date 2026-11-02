@@ -1,0 +1,15 @@
+{
+  "nguoi_phu_trach": "TV1",
+  "threshold": 0.0,
+  "chon_nguong_tren": "mac_dinh",
+  "sieu_tham_so": {
+    "C": 0.1,
+    "class_weight": {
+      "0": 1,
+      "1": 15
+    },
+    "features": "FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)"
+  },
+  "random_seed": 42,
+  "ghi_chu": "Mô hình tối ưu FeatureUnion 3 nhánh (Word+Char+Lexicon) + GridSearchCV C=0.1, weight={0:1,1:15}"
+}

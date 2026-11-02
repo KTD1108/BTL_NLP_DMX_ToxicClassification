@@ -15,6 +15,7 @@ Nhiệm vụ kỹ thuật hoàn chỉnh:
 import os
 import sys
 import re
+import json
 import joblib
 import pandas as pd
 import numpy as np
@@ -348,6 +349,89 @@ df_save_metrics = df_summary.drop(columns=['_raw_preds', '_raw_cm'], errors='ign
 df_save_metrics.to_csv(summary_path, index=False, encoding='utf-8')
 print(f" -> Đã lưu bảng tổng kết metrics: {summary_path}")
 
+# -----------------------------------------------------------------------------
+# 10. XUẤT FILE DỰ ĐOÁN NỘP CHO THÀNH VIÊN 4 THEO QUY_UOC_FILE_DU_DOAN.md
+# -----------------------------------------------------------------------------
+print("\n[BƯỚC 9] Xuất file dự đoán chuẩn hóa nộp TV4 (results/predictions/)...")
+pred_dir = os.path.join('results', 'predictions')
+os.makedirs(pred_dir, exist_ok=True)
+
+# 1. svm_bow (BoW + Linear SVM)
+scores_bow = np.round(bow_pipeline.decision_function(X_test), 4)
+th_bow = 0.0
+pd.DataFrame({
+    'review_id': df_test['review_id'],
+    'label': y_test,
+    'score': scores_bow,
+    'pred': (scores_bow >= th_bow).astype(int)
+}).to_csv(os.path.join(pred_dir, 'svm_bow.csv'), index=False, encoding='utf-8')
+
+with open(os.path.join(pred_dir, 'svm_bow_info.json'), 'w', encoding='utf-8') as f:
+    json.dump({
+        'nguoi_phu_trach': 'TV1',
+        'threshold': float(th_bow),
+        'chon_nguong_tren': 'mac_dinh',
+        'sieu_tham_so': {
+            'ngram_range': [1, 2],
+            'max_features': 10000,
+            'class_weight': 'balanced'
+        },
+        'random_seed': 42,
+        'ghi_chu': 'Mô hình cơ sở BoW (CountVectorizer) + Linear SVM (class_weight=balanced)'
+    }, f, ensure_ascii=False, indent=2)
+print(" -> Đã xuất: results/predictions/svm_bow.csv & svm_bow_info.json")
+
+# 2. svm_tfidf (TF-IDF FeatureUnion nâng cấp + Linear SVM)
+scores_tfidf = np.round(test_decision_scores, 4)
+th_tfidf = 0.0
+pd.DataFrame({
+    'review_id': df_test['review_id'],
+    'label': y_test,
+    'score': scores_tfidf,
+    'pred': (scores_tfidf >= th_tfidf).astype(int)
+}).to_csv(os.path.join(pred_dir, 'svm_tfidf.csv'), index=False, encoding='utf-8')
+
+with open(os.path.join(pred_dir, 'svm_tfidf_info.json'), 'w', encoding='utf-8') as f:
+    json.dump({
+        'nguoi_phu_trach': 'TV1',
+        'threshold': float(th_tfidf),
+        'chon_nguong_tren': 'mac_dinh',
+        'sieu_tham_so': {
+            'C': 0.1,
+            'class_weight': {'0': 1, '1': 15},
+            'features': 'FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)'
+        },
+        'random_seed': 42,
+        'ghi_chu': 'Mô hình tối ưu FeatureUnion 3 nhánh (Word+Char+Lexicon) + GridSearchCV C=0.1, weight={0:1,1:15}'
+    }, f, ensure_ascii=False, indent=2)
+print(" -> Đã xuất: results/predictions/svm_tfidf.csv & svm_tfidf_info.json")
+
+# 3. svm_tfidf_single (TF-IDF đơn Word Level Baseline + Linear SVM)
+scores_tfidf_single = np.round(tfidf_single_pipeline.decision_function(X_test), 4)
+th_single = 0.0
+pd.DataFrame({
+    'review_id': df_test['review_id'],
+    'label': y_test,
+    'score': scores_tfidf_single,
+    'pred': (scores_tfidf_single >= th_single).astype(int)
+}).to_csv(os.path.join(pred_dir, 'svm_tfidf_single.csv'), index=False, encoding='utf-8')
+
+with open(os.path.join(pred_dir, 'svm_tfidf_single_info.json'), 'w', encoding='utf-8') as f:
+    json.dump({
+        'nguoi_phu_trach': 'TV1',
+        'threshold': float(th_single),
+        'chon_nguong_tren': 'mac_dinh',
+        'sieu_tham_so': {
+            'ngram_range': [1, 2],
+            'sublinear_tf': True,
+            'max_features': 10000,
+            'class_weight': 'balanced'
+        },
+        'random_seed': 42,
+        'ghi_chu': 'Mô hình cơ sở TF-IDF đơn Word Level + Linear SVM (class_weight=balanced)'
+    }, f, ensure_ascii=False, indent=2)
+print(" -> Đã xuất: results/predictions/svm_tfidf_single.csv & svm_tfidf_single_info.json")
+
 print("\n" + "=" * 88)
-print("     HOÀN TẤT ĐỐI SÁNH ĐẦY ĐỦ CẢ 3 BIẾN THỂ (BoW -> TF-IDF ĐƠN -> NÂNG CẤP)!")
+print("     HOÀN TẤT ĐỐI SÁNH ĐẦY ĐỦ CÁC BIẾN THỂ & ĐÃ NỘP FILE DỰ ĐOÁN CHO TV4!")
 print("=" * 88)
