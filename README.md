@@ -50,6 +50,7 @@ Kế hoạch chi tiết được quy định tại: 👉 [**`KE_HOACH_CHI_TIET_B
 * **Thành viên 4 (Evaluation Lead & Report Author):**
   * Đánh giá đối sánh 5 mô hình trên cùng tập Test chuẩn vàng `data/test.csv`.
   * Tổng hợp kết quả dự đoán (đã có kết quả của SVM tại `results/tv1_svm_test_predictions.csv`).
+  * Script đánh giá chung [`4_model_evaluation.py`](./4_model_evaluation.py). **TV1, TV2, TV3 nộp file dự đoán theo quy ước tại 👉 [`QUY_UOC_FILE_DU_DOAN.md`](./QUY_UOC_FILE_DU_DOAN.md).**
   * Hoàn thiện Báo cáo tổng kết và Notebook tổng thể (`BTL_NLP_DienMayXanh.ipynb`).
 
 ---
