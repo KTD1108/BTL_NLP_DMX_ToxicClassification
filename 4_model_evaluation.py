@@ -4,8 +4,8 @@ THÀNH VIÊN 4: EVALUATION LEAD & REPORT AUTHOR
 Script: 4_model_evaluation.py
 
 Nhiệm vụ:
-1. Đọc các file dự đoán chuẩn hóa trong `results/predictions/` (quy ước tại QUY_UOC_FILE_DU_DOAN.md),
-   kiểm tra tính hợp lệ so với tập Test chuẩn vàng `data/test.csv` (2.000 mẫu).
+1. Đọc các file dự đoán chuẩn hóa và file thông tin `_info.json` đi kèm trong `results/predictions/`
+   (quy ước tại QUY_UOC_FILE_DU_DOAN.md), kiểm tra tính hợp lệ so với tập Test chuẩn vàng `data/test.csv` (2.000 mẫu).
 2. Tính lại 6 chỉ số cho mọi mô hình bằng cùng một đoạn code:
    Accuracy, Precision (Toxic), Recall (Toxic), F1 (Toxic), Macro F1, PR-AUC.
 3. Xuất kết quả (300 DPI):
@@ -22,6 +22,7 @@ Cách chạy:
 import os
 import sys
 import glob
+import json
 import math
 import argparse
 import numpy as np
@@ -47,6 +48,8 @@ plt.rcParams['axes.unicode_minus'] = False
 
 TEST_PATH = os.path.join('data', 'test.csv')
 REQUIRED_COLS = ['review_id', 'label', 'score', 'pred']
+REQUIRED_INFO_KEYS = ['nguoi_phu_trach', 'threshold', 'chon_nguong_tren', 'sieu_tham_so', 'random_seed']
+THRESHOLD_SOURCES = ['val', 'train_cv', 'mac_dinh']
 
 # Thứ tự khai báo = thứ tự hiển thị trong bảng và biểu đồ
 MODEL_NAMES = {
@@ -129,6 +132,49 @@ def validate_prediction_file(path, test_df):
     return df, []
 
 
+def validate_info_file(info_path, df):
+    """Kiểm tra file `<ma_mo_hinh>_info.json` đi kèm. Trả về (dict thông tin, danh sách lỗi)."""
+    if not os.path.exists(info_path):
+        return None, [f"Thiếu file thông tin `{os.path.basename(info_path)}` đi kèm."]
+    try:
+        with open(info_path, encoding='utf-8') as f:
+            info = json.load(f)
+    except Exception as e:
+        return None, [f"Không đọc được `{os.path.basename(info_path)}`: {e}"]
+    if not isinstance(info, dict):
+        return None, ["File thông tin phải là một object JSON."]
+
+    missing_keys = [k for k in REQUIRED_INFO_KEYS if k not in info]
+    if missing_keys:
+        return None, [f"File thông tin thiếu trường {missing_keys}."]
+
+    errors = []
+    if info['chon_nguong_tren'] not in THRESHOLD_SOURCES:
+        errors.append(f"`chon_nguong_tren` = {info['chon_nguong_tren']!r}, chỉ chấp nhận {THRESHOLD_SOURCES}.")
+    if not isinstance(info['sieu_tham_so'], dict):
+        errors.append("`sieu_tham_so` phải là một object JSON, ví dụ {\"alpha\": 0.5}.")
+    if isinstance(info['threshold'], bool) or not isinstance(info['threshold'], (int, float)):
+        errors.append(f"`threshold` = {info['threshold']!r} không phải số.")
+    elif df is not None:
+        n_mismatch = ((df['score'] >= info['threshold']).astype(int) != df['pred']).sum()
+        if n_mismatch:
+            errors.append(f"Có {n_mismatch} dòng `pred` không khớp với `score >= threshold` "
+                          f"(threshold = {info['threshold']}).")
+
+    return (info if not errors else None), errors
+
+
+def validate_submission(path, test_df):
+    """Kiểm tra cặp file dự đoán + file thông tin. Trả về (DataFrame, dict thông tin, danh sách lỗi)."""
+    df, errors = validate_prediction_file(path, test_df)
+    info_path = os.path.splitext(path)[0] + '_info.json'
+    info, info_errors = validate_info_file(info_path, df)
+    errors = errors + info_errors
+    if errors:
+        return None, None, errors
+    return df, info, []
+
+
 # -----------------------------------------------------------------------------
 # 2. TÍNH CHỈ SỐ ĐÁNH GIÁ
 # -----------------------------------------------------------------------------
@@ -151,7 +197,7 @@ def compute_metrics(y_true, y_pred, scores):
 
 def run_check(path, test_df):
     print(f"Kiểm tra file: {path}")
-    df, errors = validate_prediction_file(path, test_df)
+    df, info, errors = validate_submission(path, test_df)
     if errors:
         print(" -> KHÔNG HỢP LỆ:")
         for err in errors:
@@ -159,6 +205,8 @@ def run_check(path, test_df):
         return 1
     m = compute_metrics(df['label'], df['pred'], df['score'])
     print(" -> HỢP LỆ.")
+    print(f"    Ngưỡng = {info['threshold']} (chọn trên: {info['chon_nguong_tren']}) "
+          f"| Siêu tham số: {json.dumps(info['sieu_tham_so'], ensure_ascii=False)}")
     print(f"    Dự đoán Toxic: {df['pred'].sum()} câu | TP={m['TP']} FP={m['FP']} FN={m['FN']} "
           f"| Macro F1={m['Macro F1']:.4f} | PR-AUC={m['PR-AUC']:.4f}")
     return 0
@@ -268,13 +316,15 @@ def main():
 
     print(f"\n[BƯỚC 1] Kiểm tra {len(paths)} file dự đoán trong `{args.pred_dir}`...")
     predictions = {}
+    infos = {}
     for path in paths:
         model_id = os.path.splitext(os.path.basename(path))[0]
-        df, errors = validate_prediction_file(path, test_df)
+        df, info, errors = validate_submission(path, test_df)
         if errors:
             print(f" [BỎ QUA] {model_id}: " + ' | '.join(errors))
             continue
         predictions[model_id] = df
+        infos[model_id] = info
         print(f" [OK] {model_id}")
 
     missing_models = [m for m in MODEL_NAMES if m not in predictions]
@@ -291,12 +341,20 @@ def main():
         m = compute_metrics(df['label'], df['pred'], df['score'])
         m['Mã mô hình'] = model_id
         m['Mô hình'] = MODEL_NAMES.get(model_id, model_id)
+        m['Người phụ trách'] = infos[model_id]['nguoi_phu_trach']
+        m['Ngưỡng'] = infos[model_id]['threshold']
+        m['Chọn ngưỡng trên'] = infos[model_id]['chon_nguong_tren']
+        m['Siêu tham số'] = json.dumps(infos[model_id]['sieu_tham_so'], ensure_ascii=False)
+        m['Random seed'] = infos[model_id]['random_seed']
         results.append(m)
 
-    table_cols = ['Mã mô hình', 'Mô hình', 'Accuracy', 'Precision (Toxic)', 'Recall (Toxic)',
-                  'F1 (Toxic)', 'Macro F1', 'PR-AUC', 'TP', 'FP', 'FN', 'TN']
-    df_metrics = pd.DataFrame(results)[table_cols]
-    print("\n" + df_metrics.drop(columns='Mã mô hình').to_string(index=False, float_format=lambda v: f"{v:.4f}"))
+    metric_cols = ['Accuracy', 'Precision (Toxic)', 'Recall (Toxic)',
+                   'F1 (Toxic)', 'Macro F1', 'PR-AUC', 'TP', 'FP', 'FN', 'TN']
+    config_cols = ['Người phụ trách', 'Ngưỡng', 'Chọn ngưỡng trên', 'Siêu tham số', 'Random seed']
+    df_metrics = pd.DataFrame(results)[['Mã mô hình', 'Mô hình'] + metric_cols + config_cols]
+    print("\n" + df_metrics[['Mô hình'] + metric_cols].to_string(index=False, float_format=lambda v: f"{v:.4f}"))
+    print("\nCấu hình từng mô hình:")
+    print(df_metrics[['Mô hình'] + config_cols].to_string(index=False))
 
     os.makedirs(args.out_dir, exist_ok=True)
     metrics_path = os.path.join(args.out_dir, 'tv4_model_comparison.csv')
