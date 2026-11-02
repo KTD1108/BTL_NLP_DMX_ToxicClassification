@@ -31,10 +31,11 @@ Toàn bộ dữ liệu đã được tiền xử lý chuẩn hóa qua pipeline [
 
 Kế hoạch chi tiết được quy định tại: 👉 [**`KE_HOACH_CHI_TIET_BTL_4_NGUOI.md`**](./KE_HOACH_CHI_TIET_BTL_4_NGUOI.md)
 
-* **Thành viên 1 (Data Architect & SVM Lead - ĐÃ HOÀN THÀNH):**
+* **Thành viên 1: Kiều Tiến Đạt (Data Architect & SVM Specialist):**
   * Lấy mẫu phân tầng 10k từ kho dữ liệu gốc 72k dòng, xây dựng bộ 3 Train/Val/Test.
   * Xây dựng pipeline tiền xử lý tiếng Việt chung [`nlp_utils.py`](./nlp_utils.py).
-  * Huấn luyện mô hình **Linear SVM** nâng cấp (`3b_train_svm.py`): FeatureUnion 3 nhánh đặc trưng (Word N-grams + Char_wb N-grams), GridSearchCV 5-Folds, Class Weighting (`{0: 1, 1: 15}`), Auto Threshold Tuning ($T^* = -0.10$). Đạt **Toxic F1 = 0.4000**, **Macro F1 = 0.6934** trên tập Test.
+  * Huấn luyện mô hình **Linear SVM** đối sánh 3 biến thể (`3b_train_svm.py`): BoW baseline, TF-IDF đơn baseline, và FeatureUnion nâng cấp 3 nhánh đặc trưng (Word TF-IDF + Char_wb TF-IDF + Lexicon) kết hợp GridSearchCV 5-Folds (`C=0.1`, `class_weight={0: 1, 1: 15}`). Đạt **Toxic F1 = 0.4000**, **Macro F1 = 0.6950**, **PR-AUC = 0.4061** trên tập Test.
+  * Xuất chuẩn hóa 3 cặp file dự đoán vào `results/predictions/` (`svm_bow`, `svm_tfidf_single`, `svm_tfidf`) theo quy ước của TV4.
   * Báo cáo chi tiết: [`BAO_CAO_TIEN_DO_VA_KET_QUA_TV1.md`](./BAO_CAO_TIEN_DO_VA_KET_QUA_TV1.md).
 
 * **Thành viên 2 (NLP Preprocessing & Naive Bayes Specialist):**
@@ -90,14 +91,21 @@ Kết quả sẽ tự động lưu vào thư mục `results/`:
 │   ├── tap_test_2000_can_gan_tay.csv # Lịch sử gán nhãn 4 thành viên
 │   └── tap_test_2000_can_gan_tay.xlsx
 ├── results/
-│   ├── tv1_svm_metrics.csv           # Bảng điểm SVM trên tập Test
-│   ├── tv1_svm_test_predictions.csv  # Nhãn dự đoán SVM trên tập Test
+│   ├── predictions/                  # Thư mục nộp file dự đoán cho TV4
+│   │   ├── svm_bow.csv & _info.json
+│   │   ├── svm_tfidf_single.csv & _info.json
+│   │   └── svm_tfidf.csv & _info.json
+│   ├── tv1_svm_metrics.csv           # Bảng điểm đối sánh SVM trên tập Test
+│   ├── tv1_svm_test_predictions.csv  # Nhãn dự đoán SVM chi tiết trên tập Test
 │   ├── tv1_svm_confusion_matrices.png# Biểu đồ Ma trận nhầm lẫn SVM
 │   ├── tv1_svm_top_features.png      # Biểu đồ Top trọng số đặc trưng SVM
+│   ├── tv4_model_comparison.csv      # Bảng đối sánh tổng hợp của TV4
 │   └── human_vs_ai_agreement.csv     # Phân tích đối sánh Con người vs AI (2.000 mẫu)
 ├── nlp_utils.py                      # Pipeline tiền xử lý văn bản tiếng Việt dùng chung
 ├── build_full_datasets.py            # Kịch bản chia tách bộ 3 Train/Val/Test
-├── 3b_train_svm.py                   # Mã nguồn huấn luyện & tinh chỉnh Linear SVM (TV1)
+├── 3b_train_svm.py                   # Huấn luyện & đánh giá đối sánh Linear SVM (TV1)
+├── 4_model_evaluation.py             # Script đánh giá chung & vẽ biểu đồ đối sánh (TV4)
+├── QUY_UOC_FILE_DU_DOAN.md           # Quy ước định dạng nộp file dự đoán cho TV4
 ├── KE_HOACH_CHI_TIET_BTL_4_NGUOI.md  # Kế hoạch chi tiết phân công 4 thành viên
 ├── BAO_CAO_TIEN_DO_VA_KET_QUA_TV1.md # Báo cáo tiến độ & kết quả chuyên sâu TV1
 └── README.md                         # Tài liệu hướng dẫn chung

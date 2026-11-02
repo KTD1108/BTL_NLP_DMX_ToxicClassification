@@ -56,6 +56,7 @@ MODEL_NAMES = {
     'nb_bow': 'BoW + Naive Bayes',
     'nb_tfidf': 'TF-IDF + Naive Bayes',
     'svm_bow': 'BoW + Linear SVM',
+    'svm_tfidf_single': 'TF-IDF đơn + Linear SVM',
     'svm_tfidf': 'TF-IDF + Linear SVM',
     'bilstm': 'Word Embeddings + BiLSTM',
 }

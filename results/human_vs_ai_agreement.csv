@@ -1,4 +1,4 @@
-stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,agreement_type
+﻿stt,review_id,so_sao,noi_dung,human_label,ai_label,ai_prob_toxic,is_agreement,agreement_type
 1,58896069,2,"Chính sách bảo hành và hỗ trợ đồng bào của hãng đối với trường hợp máy bị ngập nước do thiên tai bão lũ rất kém so với các hãng khác, nên cân nhắc khi mua các sp của hãng này.",0,0,0.0333681367337703,1,Agree_NonToxic
 2,33055842,4,"Mới đầu đun lúc nhấc nồi ra thì kiềng dính vào đay nồi luôn. Cũng khá ổn, lửa xanh, nấu nhanh. Bếp dễ vệ sinh.",0,0,0.0199161134660244,1,Agree_NonToxic
 3,54635288,4,"Hình thức đẹp, âm thanh tốt.",0,0,0.0177007112652063,1,Agree_NonToxic

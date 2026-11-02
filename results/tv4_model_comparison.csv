@@ -1,0 +1,4 @@
+﻿Mã mô hình,Mô hình,Accuracy,Precision (Toxic),Recall (Toxic),F1 (Toxic),Macro F1,PR-AUC,TP,FP,FN,TN,Người phụ trách,Ngưỡng,Chọn ngưỡng trên,Siêu tham số,Random seed
+svm_bow,BoW + Linear SVM,0.977,0.35,0.175,0.2333,0.6108,0.1778,7,13,33,1947,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""max_features"": 10000, ""class_weight"": ""balanced""}",42
+svm_tfidf_single,TF-IDF đơn + Linear SVM,0.9755,0.2857,0.15,0.1967,0.5921,0.2437,6,15,34,1945,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""sublinear_tf"": true, ""max_features"": 10000, ""class_weight"": ""balanced""}",42
+svm_tfidf,TF-IDF + Linear SVM,0.9805,0.52,0.325,0.4,0.695,0.4061,13,12,27,1948,TV1,0.0,mac_dinh,"{""C"": 0.1, ""class_weight"": {""0"": 1, ""1"": 15}, ""features"": ""FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)""}",42
