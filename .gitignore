@@ -37,3 +37,7 @@ Thumbs.db
 .idea/
 *.swp
 ~$*.xlsx
+
+# Word embeddings pretrained (PhoW2V ~2GB, giấy phép không cho phân phối lại)
+bilstm_project/embeddings/*.txt
+bilstm_project/embeddings/*.zip
