@@ -4,3 +4,4 @@ nb_tfidf,TF-IDF + Naive Bayes,0.98,0.3514,0.4483,0.3939,0.6919,0.2767,13,24,16,1
 svm_bow,BoW + Linear SVM,0.9815,0.3,0.2069,0.2449,0.6178,0.1451,6,14,23,1957,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""max_features"": 10000, ""class_weight"": ""balanced""}",42
 svm_tfidf_single,TF-IDF đơn + Linear SVM,0.98,0.2381,0.1724,0.2,0.5949,0.2459,5,16,24,1955,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""sublinear_tf"": true, ""max_features"": 10000, ""class_weight"": ""balanced""}",42
 svm_tfidf,TF-IDF + Linear SVM,0.986,0.52,0.4483,0.4815,0.7372,0.4726,13,12,16,1959,TV1,0.0,mac_dinh,"{""C"": 0.1, ""class_weight"": {""0"": 1, ""1"": 15}, ""features"": ""FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)""}",42
+bilstm,Word Embeddings + BiLSTM,0.9865,0.5417,0.4483,0.4906,0.7419,0.3995,13,11,16,1960,TV3,0.3,val,"{""embed_dim"": 100, ""hidden_dim"": 128, ""num_layers"": 1, ""pos_weight"": 15.0, ""dropout"": 0.5, ""fusion"": ""BiLSTM + Lexicon Prior Calibration""}",42

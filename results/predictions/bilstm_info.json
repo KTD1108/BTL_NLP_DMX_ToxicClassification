@@ -1,0 +1,15 @@
+{
+  "nguoi_phu_trach": "TV3",
+  "threshold": 0.3,
+  "chon_nguong_tren": "val",
+  "sieu_tham_so": {
+    "embed_dim": 100,
+    "hidden_dim": 128,
+    "num_layers": 1,
+    "pos_weight": 15.0,
+    "dropout": 0.5,
+    "fusion": "BiLSTM + Lexicon Prior Calibration"
+  },
+  "random_seed": 42,
+  "ghi_chu": "Word Embeddings (PhoW2V) + BiLSTM kết hợp hiệu chuẩn Lexicon Prior để triệt tiêu False Positives trên đánh giá bảo hành"
+}
