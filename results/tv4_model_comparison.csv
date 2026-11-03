@@ -1,4 +1,6 @@
 ﻿Mã mô hình,Mô hình,Accuracy,Precision (Toxic),Recall (Toxic),F1 (Toxic),Macro F1,PR-AUC,TP,FP,FN,TN,Người phụ trách,Ngưỡng,Chọn ngưỡng trên,Siêu tham số,Random seed
-svm_bow,BoW + Linear SVM,0.977,0.35,0.175,0.2333,0.6108,0.1778,7,13,33,1947,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""max_features"": 10000, ""class_weight"": ""balanced""}",42
-svm_tfidf_single,TF-IDF đơn + Linear SVM,0.9755,0.2857,0.15,0.1967,0.5921,0.2437,6,15,34,1945,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""sublinear_tf"": true, ""max_features"": 10000, ""class_weight"": ""balanced""}",42
-svm_tfidf,TF-IDF + Linear SVM,0.9805,0.52,0.325,0.4,0.695,0.4061,13,12,27,1948,TV1,0.0,mac_dinh,"{""C"": 0.1, ""class_weight"": {""0"": 1, ""1"": 15}, ""features"": ""FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)""}",42
+nb_bow,BoW + Naive Bayes,0.9765,0.2632,0.3448,0.2985,0.6433,0.2017,10,28,19,1943,TV2,0.75,train_cv,"{""alpha"": 0.1, ""ngram_range"": [1, 1], ""min_df"": 1}",42
+nb_tfidf,TF-IDF + Naive Bayes,0.98,0.3514,0.4483,0.3939,0.6919,0.2767,13,24,16,1947,TV2,0.1,train_cv,"{""alpha"": 0.1, ""ngram_range"": [1, 1], ""min_df"": 2}",42
+svm_bow,BoW + Linear SVM,0.9815,0.3,0.2069,0.2449,0.6178,0.1451,6,14,23,1957,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""max_features"": 10000, ""class_weight"": ""balanced""}",42
+svm_tfidf_single,TF-IDF đơn + Linear SVM,0.98,0.2381,0.1724,0.2,0.5949,0.2459,5,16,24,1955,TV1,0.0,mac_dinh,"{""ngram_range"": [1, 2], ""sublinear_tf"": true, ""max_features"": 10000, ""class_weight"": ""balanced""}",42
+svm_tfidf,TF-IDF + Linear SVM,0.986,0.52,0.4483,0.4815,0.7372,0.4726,13,12,16,1959,TV1,0.0,mac_dinh,"{""C"": 0.1, ""class_weight"": {""0"": 1, ""1"": 15}, ""features"": ""FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)""}",42
