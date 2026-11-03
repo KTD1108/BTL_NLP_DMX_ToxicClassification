@@ -93,10 +93,11 @@ class ToxicLexiconFeatureExtractor(BaseEstimator, TransformerMixin):
 # -----------------------------------------------------------------------------
 # 2. NẠP DỮ LIỆU & ÁP DỤNG CHUẨN HÓA TỪ LÓNG
 # -----------------------------------------------------------------------------
-print("\n[BƯỚC 1] Đang nạp và chuẩn hóa từ lóng trên các tập dữ liệu...")
-df_train = pd.read_csv('data/train.csv')
-df_val = pd.read_csv('data/val.csv')
-df_test = pd.read_csv('data/test.csv')
+DATA_DIR = os.environ.get('DATA_DIR', 'data')
+print(f"\n[BƯỚC 1] Đang nạp và chuẩn hóa từ lóng từ thư mục: {DATA_DIR}/...")
+df_train = pd.read_csv(os.path.join(DATA_DIR, 'train.csv'))
+df_val = pd.read_csv(os.path.join(DATA_DIR, 'val.csv'))
+df_test = pd.read_csv(os.path.join(DATA_DIR, 'test.csv'))
 
 X_train_raw = df_train['noi_dung_tien_xu_ly'].fillna('').astype(str)
 y_train = df_train['label'].astype(int)
@@ -135,7 +136,7 @@ metrics_bow = {
     'TP': cm_bow[1, 1], 'FP': cm_bow[0, 1], 'FN': cm_bow[1, 0], 'TN': cm_bow[0, 0]
 }
 print(f" -> BoW Result: Accuracy={metrics_bow['Accuracy']} | Prec={metrics_bow['Precision (Toxic)']} | Rec={metrics_bow['Recall (Toxic)']} | Toxic F1={metrics_bow['F1-Score (Toxic)']} | Macro F1={metrics_bow['Macro F1-Score']}")
-print(f"    TP: {cm_bow[1,1]}/40 câu, FP: {cm_bow[0,1]} câu, FN: {cm_bow[1,0]} câu")
+print(f"    TP: {cm_bow[1,1]}/{y_test.sum()} câu, FP: {cm_bow[0,1]} câu, FN: {cm_bow[1,0]} câu")
 
 # -----------------------------------------------------------------------------
 # 4. HUẤN LUYỆN MÔ HÌNH CƠ SỞ 2: TF-IDF ĐƠN + LINEAR SVM
@@ -161,7 +162,7 @@ metrics_tfidf = {
     'TP': cm_tfidf[1, 1], 'FP': cm_tfidf[0, 1], 'FN': cm_tfidf[1, 0], 'TN': cm_tfidf[0, 0]
 }
 print(f" -> TF-IDF Result: Accuracy={metrics_tfidf['Accuracy']} | Prec={metrics_tfidf['Precision (Toxic)']} | Rec={metrics_tfidf['Recall (Toxic)']} | Toxic F1={metrics_tfidf['F1-Score (Toxic)']} | Macro F1={metrics_tfidf['Macro F1-Score']}")
-print(f"    TP: {cm_tfidf[1,1]}/40 câu, FP: {cm_tfidf[0,1]} câu, FN: {cm_tfidf[1,0]} câu")
+print(f"    TP: {cm_tfidf[1,1]}/{y_test.sum()} câu, FP: {cm_tfidf[0,1]} câu, FN: {cm_tfidf[1,0]} câu")
 
 # -----------------------------------------------------------------------------
 # 5. HUẤN LUYỆN MÔ HÌNH NÂNG CẤP 3: FEATUREUNION 3 NHÁNH & GRIDSEARCHCV

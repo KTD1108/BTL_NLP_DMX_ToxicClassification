@@ -13,6 +13,7 @@ Quy trình (cho mỗi loại đặc trưng):
   results/nb_confusion_matrices.png, results/nb_top_features.png
 """
 import json
+import os
 import sys
 from itertools import product
 from pathlib import Path
@@ -31,7 +32,7 @@ from sklearn.pipeline import Pipeline
 
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = Path(__file__).resolve().parent
-DATA = ROOT / "data"
+DATA = ROOT / os.environ.get("DATA_DIR", "data")
 RESULTS = ROOT / "results"
 PRED_DIR = RESULTS / "predictions"
 SEED = 42

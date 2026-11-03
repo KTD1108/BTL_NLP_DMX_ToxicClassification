@@ -1,6 +1,6 @@
 {
   "nguoi_phu_trach": "TV2",
-  "threshold": 0.1,
+  "threshold": 0.15,
   "chon_nguong_tren": "train_cv",
   "sieu_tham_so": {
     "alpha": 0.1,

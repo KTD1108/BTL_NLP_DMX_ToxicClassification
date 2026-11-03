@@ -1,5 +1,5 @@
 ﻿Mô hình / Cấu hình,Không gian đặc trưng,Ngưỡng,Accuracy,Precision (Toxic),Recall (Toxic),F1-Score (Toxic),Macro F1-Score,TP,FP,FN,TN
-1. BoW (CountVectorizer) + Linear SVM,"Bag-of-Words Word (1, 2)",0.00,98.15%,30.00%,20.69%,0.2449,0.6178,6,14,23,1957
-2. TF-IDF đơn (Word Level) + Linear SVM,"TF-IDF Word (1, 2) + L2 Norm",0.00,98.00%,23.81%,17.24%,0.2000,0.5949,5,16,24,1955
-3. Linear SVM Nâng cấp (Ngưỡng 0.00),FeatureUnion (Word + Char_wb + Lexicon),+0.00,98.60%,52.00%,44.83%,0.4815,0.7372,13,12,16,1959
-4. Linear SVM Nâng cấp (Ngưỡng tối ưu -0.10),FeatureUnion (Word + Char_wb + Lexicon),-0.10,98.35%,43.75%,48.28%,0.4590,0.7253,14,18,15,1953
+1. BoW (CountVectorizer) + Linear SVM,"Bag-of-Words Word (1, 2)",0.00,96.90%,66.67%,34.67%,0.4561,0.7201,26,13,49,1912
+2. TF-IDF đơn (Word Level) + Linear SVM,"TF-IDF Word (1, 2) + L2 Norm",0.00,96.85%,62.50%,40.00%,0.4878,0.7358,30,18,45,1907
+3. Linear SVM Nâng cấp (Ngưỡng 0.00),FeatureUnion (Word + Char_wb + Lexicon),+0.00,97.65%,75.00%,56.00%,0.6412,0.8145,42,14,33,1911
+4. Linear SVM Nâng cấp (Ngưỡng tối ưu +0.00),FeatureUnion (Word + Char_wb + Lexicon),+0.00,97.65%,75.00%,56.00%,0.6412,0.8145,42,14,33,1911

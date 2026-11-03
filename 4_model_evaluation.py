@@ -46,10 +46,11 @@ sys.stdout.reconfigure(encoding='utf-8')
 plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
 plt.rcParams['axes.unicode_minus'] = False
 
-TEST_PATH = os.path.join('data', 'test.csv')
+DATA_DIR = os.environ.get('DATA_DIR', 'data')
+TEST_PATH = os.path.join(DATA_DIR, 'test.csv')
 REQUIRED_COLS = ['review_id', 'label', 'score', 'pred']
 REQUIRED_INFO_KEYS = ['nguoi_phu_trach', 'threshold', 'chon_nguong_tren', 'sieu_tham_so', 'random_seed']
-THRESHOLD_SOURCES = ['val', 'train_cv', 'mac_dinh']
+THRESHOLD_SOURCES = ['val', 'train_cv', 'mac_dinh', 'tap_validation']
 
 # Thứ tự khai báo = thứ tự hiển thị trong bảng và biểu đồ
 MODEL_NAMES = {
@@ -58,7 +59,7 @@ MODEL_NAMES = {
     'svm_bow': 'BoW + Linear SVM',
     'svm_tfidf_single': 'TF-IDF đơn + Linear SVM',
     'svm_tfidf': 'TF-IDF + Linear SVM',
-    'bilstm': 'Word Embeddings + BiLSTM',
+    'phobert': 'PhoBERT (vinai/phobert-base-v2)',
 }
 
 # Bảng màu đồ thị

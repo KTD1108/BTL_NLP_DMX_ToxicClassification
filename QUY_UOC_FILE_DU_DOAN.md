@@ -1,7 +1,7 @@
 # QUY ƯỚC FILE DỰ ĐOÁN TRÊN TẬP TEST (NỘP CHO TV4)
 
-> **Áp dụng cho:** TV1 (SVM), TV2 (Naive Bayes), TV3 (BiLSTM).
-> **Mục đích:** TV4 tự tính lại toàn bộ chỉ số (Accuracy, Precision, Recall, F1 Toxic, Macro F1, PR-AUC) cho cả 5 mô hình bằng **cùng một đoạn code** trong `4_model_evaluation.py`, để bảng so sánh trong báo cáo công bằng và nhất quán.
+> **Áp dụng cho:** TV1 (SVM), TV2 (Naive Bayes), TV3 (PhoBERT).
+> **Mục đích:** TV4 tự tính lại toàn bộ chỉ số (Accuracy, Precision, Recall, F1 Toxic, Macro F1, PR-AUC) cho cả 6 mô hình bằng **cùng một đoạn code** trong `4_model_evaluation.py`, để bảng so sánh trong báo cáo công bằng và nhất quán.
 > Mỗi người vẫn giữ các file kết quả riêng của mình (metrics, biểu đồ...) như bình thường. File dưới đây là file **nộp thêm**.
 
 ---
@@ -15,8 +15,9 @@ Mỗi mô hình nộp **1 file CSV** (dự đoán) và **1 file JSON** (thông t
 | `nb_bow` | `results/predictions/nb_bow.csv` | BoW + Naive Bayes | TV2 |
 | `nb_tfidf` | `results/predictions/nb_tfidf.csv` | TF-IDF + Naive Bayes | TV2 |
 | `svm_bow` | `results/predictions/svm_bow.csv` | BoW + Linear SVM | TV1 |
-| `svm_tfidf` | `results/predictions/svm_tfidf.csv` | TF-IDF + Linear SVM | TV1 |
-| `bilstm` | `results/predictions/bilstm.csv` | Word Embeddings + BiLSTM | TV3 |
+| `svm_tfidf_single` | `results/predictions/svm_tfidf_single.csv` | TF-IDF đơn + Linear SVM | TV1 |
+| `svm_tfidf` | `results/predictions/svm_tfidf.csv` | TF-IDF nâng cấp + Linear SVM | TV1 |
+| `phobert` | `results/predictions/phobert.csv` | PhoBERT Contextual Transformer | TV3 |
 
 Nếu có thêm biến thể khác (ví dụ một mô hình cải tiến), đặt tên file theo dạng `<ma_mo_hinh>.csv` (chữ thường, không dấu, nối bằng `_`) và báo TV4. Script đánh giá tự đọc mọi file `.csv` trong thư mục này.
 
@@ -44,7 +45,7 @@ review_id,label,score,pred
 | :--- | :--- |
 | Naive Bayes | `model.predict_proba(X_test)[:, 1]` (xác suất lớp Toxic) |
 | Linear SVM | `model.decision_function(X_test)` |
-| BiLSTM | `torch.sigmoid(logits)` (xác suất lớp Toxic) |
+| PhoBERT | `torch.softmax(logits, dim=1)[:, 1]` (xác suất lớp Toxic) |
 
 ---
 
@@ -54,7 +55,7 @@ review_id,label,score,pred
 2. **Không có ô trống**, `score` không được là NaN/inf, `label` và `pred` chỉ là 0 hoặc 1.
 3. **Ngưỡng quyết định chọn trên tập train (cross-validation) hoặc tập val, tuyệt đối không chọn trên tập test.** Chọn ngưỡng trên test là rò rỉ dữ liệu, kết quả báo cáo sẽ không hợp lệ.
 4. File lưu dạng CSV, mã hóa **UTF-8**, dấu phân cách là dấu phẩy, có dòng tiêu đề.
-5. Với BiLSTM: khi dự đoán trên test dùng `DataLoader(..., shuffle=False)` để thứ tự dự đoán khớp với thứ tự `review_id`.
+5. Với PhoBERT: khi dự đoán trên test dùng `DataLoader(..., shuffle=False)` để thứ tự dự đoán khớp với thứ tự `review_id`.
 
 ---
 
