@@ -29,7 +29,7 @@ Từ kho dữ liệu gốc `raw.zip` gồm 71.934 đánh giá thô trên 29 ngà
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **Train** | [`data/train.csv`](file:///d:/vanban_btl1/data/train.csv) | **6.048** | 5.925 | 123 | **2.03%** | Semi-automatic + Lọc trùng |
 | **Validation** | [`data/val.csv`](file:///d:/vanban_btl1/data/val.csv) | **879** | 862 | 17 | **1.93%** | Semi-automatic + Lọc trùng |
-| **Test (Gold)** | [`data/test.csv`](file:///d:/vanban_btl1/data/test.csv) | **2.000** | 1.960 | 40 | **2.00%** | **Gán tay 4 thành viên (Chuẩn P.Án 1)** |
+| **Test (Gold)** | [`data/test.csv`](file:///d:/vanban_btl1/data/test.csv) | **2.000** | 1.971 | 29 | **1.45%** | **Gán tay 4 thành viên (Chuẩn hóa)** |
 
 > [!NOTE]
 > Cả 3 tập Train, Val và Test đều có tỷ lệ Toxic đồng nhất hoàn hảo ở mức **~2.0%** (chuẩn Stratified Split trong khoa học dữ liệu, ngăn chặn rò rỉ và lệch phân phối).
@@ -102,17 +102,18 @@ flowchart TD
 
 | Mô hình / Cấu hình | Ngưỡng (Threshold) | Accuracy | Precision (Toxic) | Recall (Toxic) | F1-Score (Toxic) | Macro F1-Score | Bắt đúng (TP) | Bắt nhầm (FP) | Bỏ sót (FN) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Mô hình AI độc lập (LLM)** | $0.50$ | 96.75% | 28.07% | 40.00% | 0.3299 | 0.6566 | 16 | 41 | 24 |
-| **1. BoW (CountVectorizer) + Linear SVM** | $0.00$ | 97.70% | 35.00% | 17.50% | 0.2333 | 0.6108 | 7 | 13 | 33 |
-| **2. TF-IDF đơn (Word Level) + Linear SVM** | $0.00$ | 97.55% | 28.57% | 15.00% | 0.1967 | 0.5921 | 6 | 15 | 34 |
-| **3. Linear SVM nâng cấp (Ngưỡng 0.00)** | **$0.00$** | **98.05%** | **52.00%** | **32.50%** | **0.4000** | **0.6950** | **13** | **12** | **27** |
-| **4. Linear SVM nâng cấp (Ngưỡng tối ưu -0.10)** | **$-0.10$** | **97.80%** | **43.75%** | **35.00%** | **0.3889** | **0.6888** | **14** | **18** | **26** |
+| **Mô hình AI độc lập (LLM)** | $0.50$ | 96.90% | 21.05% | 41.38% | 0.2791 | 0.6316 | 12 | 45 | 17 |
+| **1. BoW (CountVectorizer) + Linear SVM** | $0.00$ | 98.15% | 30.00% | 20.69% | 0.2449 | 0.6178 | 6 | 14 | 23 |
+| **2. TF-IDF đơn (Word Level) + Linear SVM** | $0.00$ | 98.00% | 23.81% | 17.24% | 0.2000 | 0.5949 | 5 | 16 | 24 |
+| **3. Linear SVM nâng cấp (Ngưỡng 0.00)** | **$0.00$** | **98.60%** | **52.00%** | **44.83%** | **0.4815** | **0.7372** | **13** | **12** | **16** |
+| **4. Linear SVM nâng cấp (Ngưỡng tối ưu -0.10)** | **$-0.10$** | **98.35%** | **43.75%** | **48.28%** | **0.4590** | **0.7253** | **14** | **18** | **15** |
 
 > [!IMPORTANT]
 > **Điểm sáng bứt phá của Mô hình nâng cấp:**
-> 1. **F1-Score lớp Toxic tăng vọt lên 0.4000** (vượt trội hoàn toàn mô hình AI 0.3299 và bản cũ 0.3590).
-> 2. **Precision đạt tới 52.00%:** Hễ mô hình báo Toxic thì xác suất đúng là $>52\%$. Số ca bắt nhầm (False Positive) giảm một nửa từ 24 câu xuống **chỉ còn đúng 12 câu** trên 1.960 câu bình thường!
-> 3. **Accuracy đạt mức ấn tượng: 98.05%.**
+> 1. **F1-Score lớp Toxic tăng vọt lên 0.4815** (vượt trội hoàn toàn mô hình AI 0.2791 và các bản cơ sở).
+> 2. **Precision đạt tới 52.00%:** Hễ mô hình báo Toxic thì xác suất đúng là $>52\%$. Số ca bắt nhầm (False Positive) chỉ còn đúng **12 câu** trên 1.971 câu bình thường!
+> 3. **Recall bắt trúng gần một nửa: 44.83% – 48.28%** (bắt đúng 13–14 câu trên 29 câu độc hại thật sự).
+> 4. **Accuracy và Macro F1 đạt mức ấn tượng: 98.60% và 0.7372.**
 
 ### 4.1.1. Phân tích sự dịch chuyển ngưỡng quyết định (Threshold Shift Analysis)
 

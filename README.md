@@ -21,7 +21,7 @@ Toàn bộ dữ liệu đã được tiền xử lý chuẩn hóa qua pipeline [
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **Train** | [`data/train.csv`](./data/train.csv) | **6.048** | 5.925 | 123 | **2.03%** | Bán tự động + Lọc trùng |
 | **Validation** | [`data/val.csv`](./data/val.csv) | **879** | 862 | 17 | **1.93%** | Dành riêng cho BiLSTM (Early Stopping/LR) |
-| **Test (Gold)** | [`data/test.csv`](./data/test.csv) | **2.000** | 1.960 | 40 | **2.00%** | **Gán tay thủ công 4 thành viên (Chuẩn vàng)** |
+| **Test (Gold)** | [`data/test.csv`](./data/test.csv) | **2.000** | 1.971 | 29 | **1.45%** | **Gán tay thủ công 4 thành viên (Chuẩn hóa)** |
 
 *Cấu trúc 8 cột đồng nhất:* `['review_id', 'product_id', 'nganh_hang', 'so_sao', 'noi_dung_goc', 'noi_dung_tien_xu_ly', 'nguon_nhan', 'label']`.
 
@@ -34,7 +34,7 @@ Kế hoạch chi tiết được quy định tại: 👉 [**`KE_HOACH_CHI_TIET_B
 * **Thành viên 1: Kiều Tiến Đạt (Data Architect & SVM Specialist):**
   * Lấy mẫu phân tầng 10k từ kho dữ liệu gốc 72k dòng, xây dựng bộ 3 Train/Val/Test.
   * Xây dựng pipeline tiền xử lý tiếng Việt chung [`nlp_utils.py`](./nlp_utils.py).
-  * Huấn luyện mô hình **Linear SVM** đối sánh 3 biến thể (`3b_train_svm.py`): BoW baseline, TF-IDF đơn baseline, và FeatureUnion nâng cấp 3 nhánh đặc trưng (Word TF-IDF + Char_wb TF-IDF + Lexicon) kết hợp GridSearchCV 5-Folds (`C=0.1`, `class_weight={0: 1, 1: 15}`). Đạt **Toxic F1 = 0.4000**, **Macro F1 = 0.6950**, **PR-AUC = 0.4061** trên tập Test.
+  * Huấn luyện mô hình **Linear SVM** đối sánh 3 biến thể (`3b_train_svm.py`): BoW baseline, TF-IDF đơn baseline, và FeatureUnion nâng cấp 3 nhánh đặc trưng (Word TF-IDF + Char_wb TF-IDF + Lexicon) kết hợp GridSearchCV 5-Folds (`C=0.1`, `class_weight={0: 1, 1: 15}`). Đạt **Toxic F1 = 0.4815**, **Macro F1 = 0.7372**, **PR-AUC = 0.4726** trên tập Test.
   * Xuất chuẩn hóa 3 cặp file dự đoán vào `results/predictions/` (`svm_bow`, `svm_tfidf_single`, `svm_tfidf`) theo quy ước của TV4.
   * Báo cáo chi tiết: [`BAO_CAO_TIEN_DO_VA_KET_QUA_TV1.md`](./BAO_CAO_TIEN_DO_VA_KET_QUA_TV1.md).
 
