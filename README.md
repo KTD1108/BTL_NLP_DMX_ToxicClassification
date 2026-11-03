@@ -5,26 +5,43 @@ Dự án nghiên cứu và xây dựng hệ thống phân loại bình luận đ
 
 ---
 
-## 1. Định nghĩa bài toán & Dữ liệu
+## 1. Định nghĩa bài toán
 
-### Định nghĩa nhãn
+### Định nghĩa nhãn phân loại
 * **Nhãn 0 (Non-toxic):** Bình luận trung tính, khen ngợi, hỏi đáp hoặc phản ánh khiếu nại về chất lượng sản phẩm/dịch vụ (*"máy giặt kêu to"*, *"giao hàng chậm"*, *"nấu cơm bị khét"*, *"hẹn bảo hành lâu"*).
 * **Nhãn 1 (Toxic):** Bình luận chứa ngôn từ thô tục, chửi thề, lăng mạ nhân viên hoặc quy chụp gian dối, vu khống lừa đảo (*"lừa đảo"*, *"lũ ăn cướp"*, *"đồ đểu"*, *"mất dạy"*, *"vcl"*).
 
-### Thống kê tập dữ liệu (`data/`)
-Dữ liệu gồm 10.000 đánh giá người dùng thực tế từ 29 ngành hàng, được làm sạch, khử trùng lặp và chia phân tầng theo tỷ lệ tự nhiên:
-
-| Tập dữ liệu | File | Số lượng mẫu | Non-toxic (0) | Toxic (1) | Tỷ lệ Toxic | Mục đích |
-| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Train** | `data/train.csv` | 7.000 | 6.760 | 240 | 3.43% | Huấn luyện mô hình |
-| **Validation** | `data/val.csv` | 1.000 | 955 | 45 | 4.50% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
-| **Test** | `data/test.csv` | 2.000 | 1.925 | 75 | 3.75% | Đánh giá kiểm thử độc lập |
-
-*Cấu trúc các cột:* `review_id`, `product_id`, `nganh_hang`, `so_sao`, `noi_dung_goc`, `noi_dung_tien_xu_ly`, `nguon_nhan`, `label`.
+### Thách thức chính
+* **Mất cân bằng dữ liệu tự nhiên:** Tỷ lệ bình luận độc hại thực tế trên sàn chỉ chiếm khoảng **3.4% – 3.7%**.
+* **Đặc thù ngôn ngữ mạng:** Người dùng thường xuyên sử dụng từ lóng, teencode, viết tắt, biến âm để lách bộ lọc từ khóa (*"đm"*, *"vcl"*, *"bịp"*...).
+* **Sắc thái cảm xúc tiêu cực:** Rất dễ nhầm lẫn giữa khách hàng bức xúc vì lỗi thiết bị với hành vi công kích, xúc phạm độc hại.
 
 ---
 
-## 2. Các phương pháp mô hình hóa
+## 2. Nguồn dữ liệu gốc & Quy trình xử lý
+
+### Dữ liệu thô ban đầu (`raw.zip`)
+Kho dữ liệu nguồn được lưu trữ trong file [`raw.zip`](./raw.zip), bao gồm:
+* `raw/dmx_reviews.csv`: Chứa **71.934 bình luận và đánh giá thực tế** của khách hàng thu thập từ hệ thống Điện Máy Xanh.
+* `raw/dmx_products_*.csv`: Danh mục sản phẩm tương ứng trải rộng trên **29 ngành hàng** điện máy, gia dụng, điện thoại và thiết bị điện tử.
+
+### Quy trình xây dựng tập dữ liệu chuẩn (`data/`)
+Từ dữ liệu gốc trong `raw.zip`, dữ liệu được xử lý qua quy trình 3 giai đoạn:
+1. **Lọc trùng và tiền xử lý văn bản:** Loại bỏ các bình luận rỗng, khử nhiễu ký tự và chuẩn hóa từ lóng, viết tắt, teencode tiếng Việt thông qua module [`nlp_utils.py`](./nlp_utils.py).
+2. **Lấy mẫu phân tầng 10.000 đánh giá:** Trích xuất 10.000 mẫu đại diện theo tỷ lệ số sao và ngành hàng tự nhiên, lưu trữ tại [`data/dmx_reviews_10k_raw.csv`](./data/dmx_reviews_10k_raw.csv).
+3. **Phân chia độc lập chống rò rỉ (Zero Data Leakage):** Phân chia thành 3 tập dữ liệu theo tỷ lệ 70% Train – 10% Validation – 20% Test, đảm bảo kiểm toán 0% trùng lặp `review_id` và 0% trùng lặp nội dung giữa các tập:
+
+| Tập dữ liệu | Đường dẫn file | Số lượng mẫu | Non-toxic (0) | Toxic (1) | Tỷ lệ Toxic | Mục đích sử dụng |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Train** | [`data/train.csv`](./data/train.csv) | **7.000** | 6.760 | 240 | 3.43% | Huấn luyện mô hình |
+| **Validation** | [`data/val.csv`](./data/val.csv) | **1.000** | 955 | 45 | 4.50% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
+| **Test (Gold)** | [`data/test.csv`](./data/test.csv) | **2.000** | 1.925 | 75 | 3.75% | Đánh giá kiểm thử độc lập |
+
+*Cấu trúc các cột chuẩn hóa:* `review_id`, `product_id`, `nganh_hang`, `so_sao`, `noi_dung_goc`, `noi_dung_tien_xu_ly`, `nguon_nhan`, `label`.
+
+---
+
+## 3. Các phương pháp mô hình hóa
 
 Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
@@ -47,7 +64,7 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
 ---
 
-## 3. Kết quả thực nghiệm
+## 4. Kết quả thực nghiệm
 
 Kết quả đánh giá độc lập trên tập Test (2.000 mẫu, 75 mẫu Toxic thật):
 
@@ -67,7 +84,7 @@ Kết quả đánh giá độc lập trên tập Test (2.000 mẫu, 75 mẫu Tox
 
 ---
 
-## 4. Hướng dẫn cài đặt và sử dụng
+## 5. Hướng dẫn cài đặt và sử dụng
 
 ### Cài đặt môi trường
 Yêu cầu Python 3.9 trở lên:
@@ -96,7 +113,7 @@ python 4_model_evaluation.py
 
 ---
 
-## 5. Cấu trúc thư mục
+## 6. Cấu trúc thư mục
 
 ```text
 ├── data/                             # Dữ liệu phân tầng (Train, Val, Test)
@@ -117,5 +134,6 @@ python 4_model_evaluation.py
 ├── 4_model_evaluation.py             # Đánh giá đối sánh và kiểm định thống kê
 ├── TV3_PhoBERT_FineTuning_Colab.ipynb# Notebook fine-tuning PhoBERT trên GPU
 ├── nlp_utils.py                      # Module tiền xử lý văn bản tiếng Việt
-└── requirements.txt                  # Danh sách thư viện phụ thuộc
+├── requirements.txt                  # Danh sách thư viện phụ thuộc
+└── raw.zip                           # File nén chứa 71.934 bình luận gốc và danh mục 29 ngành hàng
 ```
