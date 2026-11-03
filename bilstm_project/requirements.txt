@@ -3,4 +3,3 @@ numpy
 pandas
 scikit-learn
 matplotlib
-gensim   # tuỳ chọn: train Word2Vec khi không có PhoW2V

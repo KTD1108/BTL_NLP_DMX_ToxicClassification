@@ -2,7 +2,7 @@
 bilstm_utils.py
 Các thành phần dùng chung cho mô hình BiLSTM phát hiện đánh giá toxic (Điện Máy Xanh).
 
-Gồm: set_seed, Vocab, ToxicDataset + DataLoader, ma trận Word Embeddings,
+Gồm: set_seed, Vocab, ToxicDataset + DataLoader, ma trận Word Embeddings (PhoW2V),
 BiLSTMClassifier, vòng train/eval, metrics, chọn ngưỡng, vẽ learning curve,
 lưu/nạp checkpoint.
 """
@@ -63,6 +63,7 @@ class Vocab:
         self.stoi = {PAD_TOKEN: PAD_IDX, UNK_TOKEN: UNK_IDX}
         self.freqs = Counter()
 
+    # Build vocab từ danh sách văn bản (tokenize + đếm tần suất)
     def build(self, texts):
         for t in texts:
             self.freqs.update(tokenize(t))
@@ -179,35 +180,16 @@ def load_pretrained_vectors(path: str, vocab: Vocab, seed: int = 42):
     return m, dim, len(vectors)
 
 
-def train_word2vec_matrix(texts, vocab: Vocab, dim: int = 300, seed: int = 42):
-    """Fallback: train Word2Vec (skip-gram) trên chính tập train. Cần gensim."""
-    from gensim.models import Word2Vec
-    sentences = [tokenize(t) for t in texts]
-    w2v = Word2Vec(sentences, vector_size=dim, window=5, min_count=1, sg=1,
-                   epochs=20, seed=seed, workers=1)
-    m = _random_matrix(len(vocab), dim, seed)
-    hits = 0
-    for w, i in vocab.stoi.items():
-        if w in w2v.wv:
-            m[i] = w2v.wv[w]
-            hits += 1
-    return m, dim, hits
-
-
-def build_embedding_matrix(vocab: Vocab, dim: int = 300, pretrained_path: str = None,
-                           corpus=None, seed: int = 42):
-    """Thứ tự ưu tiên: (1) file pretrained -> (2) Word2Vec trên train (gensim) -> (3) random.
-    Trả về (matrix np.float32 hoặc None, dim, mô tả nguồn)."""
-    if pretrained_path and os.path.exists(pretrained_path):
-        m, d, hits = load_pretrained_vectors(pretrained_path, vocab, seed)
-        return m, d, f"pretrained ({os.path.basename(pretrained_path)}): {hits}/{len(vocab)} từ có vector ({hits/len(vocab):.1%})"
-    if corpus is not None:
-        try:
-            m, d, hits = train_word2vec_matrix(corpus, vocab, dim, seed)
-            return m, d, f"word2vec train trên tập train: {hits}/{len(vocab)} từ"
-        except ImportError:
-            print("[!] Chưa cài gensim -> dùng embedding khởi tạo ngẫu nhiên. (pip install gensim)")
-    return None, dim, "random init (nn.Embedding tự học)"
+def build_embedding_matrix(vocab: Vocab, pretrained_path: str, seed: int = 42):
+    """Tạo ma trận embedding từ PhoW2V word-level.
+    Trả về (matrix np.float32, dim, mô tả nguồn)."""
+    if not os.path.exists(pretrained_path):
+        raise FileNotFoundError(
+            f"Không tìm thấy file PhoW2V: {pretrained_path}\n"
+            "Tải word2vec_vi_words_100dims.zip tại https://github.com/datquocnguyen/PhoW2V "
+            "và giải nén file .txt vào thư mục embeddings/.")
+    m, d, hits = load_pretrained_vectors(pretrained_path, vocab, seed)
+    return m, d, f"pretrained ({os.path.basename(pretrained_path)}): {hits}/{len(vocab)} từ có vector ({hits/len(vocab):.1%})"
 
 
 # =============================================================================
