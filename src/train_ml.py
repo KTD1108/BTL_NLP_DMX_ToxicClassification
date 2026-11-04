@@ -1,9 +1,4 @@
-"""
-Bước 4a: Xây dựng và huấn luyện các thuật toán Học máy truyền thống (Naive Bayes & SVM)
-trên 2 phương pháp trích chọn đặc trưng tiêu chuẩn:
-1. Bag of Words (BoW)
-2. TF-IDF (Word + Char N-grams)
-"""
+"""Huấn luyện mô hình Machine Learning truyền thống (Naive Bayes và SVM)."""
 
 import os
 import time
@@ -31,14 +26,10 @@ def train_and_evaluate_traditional_models(
     y_test: np.ndarray,
     save_dir: str = "outputs/models",
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """
-    Huấn luyện và tinh chỉnh siêu tham số cho Naive Bayes & SVM trên 2 nhóm đặc trưng BoW và TF-IDF.
-    Trả về danh sách kết quả dự đoán trên tập Test và các đối tượng mô hình đã huấn luyện.
-    """
+    """Huấn luyện Naive Bayes và SVM trên 2 nhóm đặc trưng BoW và TF-IDF."""
     os.makedirs(save_dir, exist_ok=True)
 
-    # 1. Trích chọn đặc trưng cho 2 phương pháp (BoW và TF-IDF)
-    print("[Bước 3] Đang trích chọn đặc trưng (Bag of Words & TF-IDF Word+Char)...")
+    # Trích xuất đặc trưng
     bow_ext = build_bow_extractor(max_features=6000)
     X_train_bow = bow_ext.fit_transform(train_texts)
     X_test_bow = bow_ext.transform(test_texts)
@@ -51,7 +42,6 @@ def train_and_evaluate_traditional_models(
     joblib.dump(tfidf_ext, os.path.join(save_dir, "tfidf_extractor.pkl"))
 
     experiments = [
-        # --- Phương pháp 1: Bag of Words (BoW) ---
         {
             "feature_name": "Bag of Words (BoW)",
             "algorithm_group": "Naive Bayes",
@@ -76,7 +66,6 @@ def train_and_evaluate_traditional_models(
             "X_train": X_train_bow,
             "X_test": X_test_bow,
         },
-        # --- Phương pháp 2: TF-IDF (Word + Char N-grams) ---
         {
             "feature_name": "TF-IDF (Word + Char N-gram)",
             "algorithm_group": "Naive Bayes",
@@ -114,7 +103,7 @@ def train_and_evaluate_traditional_models(
 
     for exp in experiments:
         full_key = f"{exp['feature_name']} + {exp['model_name']}"
-        print(f"[Bước 4a] Đang huấn luyện: {full_key} ...")
+        print(f"[ML] Đang huấn luyện: {full_key} ...")
         t0 = time.time()
         est = exp["estimator"]
         X_tr = exp["X_train"]
@@ -143,7 +132,6 @@ def train_and_evaluate_traditional_models(
             "best_params": best_params,
         })
 
-    # Lưu mô hình truyền thống tốt nhất (TF-IDF + SVM)
     joblib.dump(
         trained_artifacts["models"]["TF-IDF (Word + Char N-gram) + SVM (LinearSVC)"],
         os.path.join(save_dir, "best_traditional_svm_tfidf.pkl"),

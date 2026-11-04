@@ -1,7 +1,4 @@
-"""
-Script chạy toàn bộ Pipeline Bài tập lớn 1 - Chủ đề 2c:
-Hệ thống phân loại bình luận Toxic và Non-toxic trên dữ liệu review sản phẩm Điện Máy Xanh.
-"""
+"""Pipeline phân loại bình luận Toxic và Non-toxic trên dữ liệu Điện Máy Xanh."""
 
 import os
 import sys
@@ -25,22 +22,22 @@ from src.evaluate import (
 
 
 def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool = False):
-    print("=" * 80)
-    print("BÀI TẬP LỚN 1 - CHỦ ĐỀ 2C: PHÂN LOẠI TOXIC & NON-TOXIC TRÊN ĐIỆN MÁY XANH")
-    print("=" * 80)
+    print("=" * 70)
+    print("PHÂN LOẠI BÌNH LUẬN TOXIC & NON-TOXIC (ĐIỆN MÁY XANH)")
+    print("=" * 70)
 
-    # Bước 1: Thu thập dữ liệu
-    print("\n[Bước 1] Đang thu thập và khởi tạo bộ dữ liệu bình luận Điện Máy Xanh...")
+    # 1. Đọc dữ liệu
+    print("\n[1] Đang tải dữ liệu...")
     raw_csv = "data/raw/dmx_reviews_raw.csv"
     df_raw = collect_or_build_dataset(
         output_csv_path=raw_csv,
         n_samples=n_samples,
         try_live_crawl=try_live_crawl,
     )
-    print(f" -> Tổng số mẫu thu thập: {len(df_raw)} mẫu (Non-toxic: {(df_raw['label']==0).sum()}, Toxic: {(df_raw['label']==1).sum()})")
+    print(f" -> Tổng số mẫu: {len(df_raw)} (Non-toxic: {(df_raw['label']==0).sum()}, Toxic: {(df_raw['label']==1).sum()})")
 
-    # Bước 2: Tiền xử lý dữ liệu tiếng Việt
-    print("\n[Bước 2] Đang tiền xử lý văn bản tiếng Việt (Chuẩn hóa, Teencode, Tách từ PyVi, Stopwords)...")
+    # 2. Tiền xử lý
+    print("\n[2] Tiền xử lý văn bản tiếng Việt...")
     proc_csv = "data/processed/dmx_reviews_processed.csv"
     train_csv = "data/processed/train.csv"
     val_csv = "data/processed/val.csv"
@@ -49,7 +46,7 @@ def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool =
     if os.path.exists(proc_csv) and os.path.exists(train_csv) and os.path.exists(test_csv):
         df_proc = pd.read_csv(proc_csv)
         if len(df_proc) == len(df_raw):
-            print(f" -> Đã nạp dữ liệu tiền xử lý từ cache: {len(df_proc):,} mẫu.")
+            print(f" -> Đã tải dữ liệu từ cache: {len(df_proc):,} mẫu.")
             df_train = pd.read_csv(train_csv)
             df_val = pd.read_csv(val_csv)
             df_test = pd.read_csv(test_csv)
@@ -74,16 +71,16 @@ def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool =
         df_val.to_csv(val_csv, index=False, encoding="utf-8-sig")
         df_test.to_csv(test_csv, index=False, encoding="utf-8-sig")
 
-    print(f" -> Kích thước tập dữ liệu: Train = {len(df_train):,}, Val = {len(df_val):,}, Test = {len(df_test):,}")
+    print(f" -> Tập Train: {len(df_train):,}, Val: {len(df_val):,}, Test: {len(df_test):,}")
 
     for d in [df_train, df_val, df_test]:
         d["clean_text"] = d["clean_text"].fillna("").astype(str)
         d["phobert_text"] = d["phobert_text"].fillna("").astype(str)
 
-    # Vẽ biểu đồ thống kê dữ liệu (EDA)
     plot_eda_figures(df_proc, fig_dir="outputs/figures")
 
-    # Bước 3 & 4a: Trích chọn đặc trưng + Huấn luyện Naive Bayes & SVM
+    # 3. Huấn luyện Naive Bayes & SVM
+    print("\n[3] Huấn luyện Naive Bayes & SVM...")
     ml_outputs, _ = train_and_evaluate_traditional_models(
         train_texts=df_train["clean_text"].tolist(),
         y_train=df_train["label"].values,
@@ -94,7 +91,8 @@ def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool =
         save_dir="outputs/models",
     )
 
-    # Bước 4b (Bổ sung ý 4): Huấn luyện mô hình hiện đại PhoBERT / Contextual Transformer
+    # 4. Huấn luyện PhoBERT / Contextual Transformer
+    print("\n[4] Huấn luyện mô hình Transformer...")
     dl_output = train_modern_transformer_model(
         train_texts=df_train["phobert_text"].tolist(),
         y_train=df_train["label"].values,
@@ -108,8 +106,8 @@ def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool =
 
     all_experiments = ml_outputs + [dl_output]
 
-    # Bước 5: Đánh giá mô hình & Vẽ biểu đồ so sánh
-    print("\n[Bước 5] Đang tính toán các chỉ số đánh giá và xuất biểu đồ...")
+    # 5. Đánh giá mô hình
+    print("\n[5] Đánh giá kết quả trên tập Test...")
     df_results = evaluate_all_models(
         y_test=df_test["label"].values,
         experiment_outputs=all_experiments,
@@ -127,9 +125,9 @@ def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool =
         output_dir="outputs",
     )
 
-    print("\n" + "=" * 80)
-    print("BẢNG KẾT QUẢ THỰC NGHIỆM TRÊN TẬP KIỂM TRA (TEST SET)")
-    print("=" * 80)
+    print("\n" + "=" * 70)
+    print("KẾT QUẢ ĐÁNH GIÁ TRÊN TẬP TEST")
+    print("=" * 70)
     cols_show = [
         "STT",
         "Phương pháp trích chọn đặc trưng",
@@ -141,16 +139,16 @@ def main(n_samples: int = 15000, try_live_crawl: bool = True, use_hf_hub: bool =
         "Macro-F1 (%)",
     ]
     print(df_results[cols_show].to_string(index=False))
-    print(f"\n-> Đã lưu bảng tổng hợp tại: outputs/results_summary.csv")
-    print(f"-> Đã lưu phân tích lỗi ({len(df_err)} câu khó) tại: outputs/error_analysis.csv")
-    print(f"-> Đã lưu 5 biểu đồ chất lượng cao tại: outputs/figures/")
+    print(f"\n-> Bảng tổng hợp: outputs/results_summary.csv")
+    print(f"-> Phân tích lỗi: outputs/error_analysis.csv ({len(df_err)} mẫu)")
+    print(f"-> Biểu đồ: outputs/figures/")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--samples", type=int, default=15000, help="Số lượng mẫu bình luận")
-    parser.add_argument("--no-live-crawl", action="store_true", help="Tắt thử nghiệm crawl trực tiếp")
-    parser.add_argument("--use-hf-hub", action="store_true", help="Fine-tune trực tiếp vinai/phobert-base-v2 từ HuggingFace")
+    parser.add_argument("--no-live-crawl", action="store_true", help="Bỏ qua live crawl")
+    parser.add_argument("--use-hf-hub", action="store_true", help="Fine-tune mô hình từ HuggingFace")
     args = parser.parse_args()
     main(
         n_samples=args.samples,

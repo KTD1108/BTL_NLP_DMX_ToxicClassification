@@ -1,19 +1,8 @@
-"""
-Bước 4b (Bổ sung ý 4 - Hướng 1):
-Xây dựng và huấn luyện Mô hình hiện đại dựa trên kiến trúc Transformer (PhoBERT / ViSoBERT)
-giải quyết bài toán phân loại bình luận Toxic và Non-toxic trên Điện Máy Xanh.
-
-Hỗ trợ 2 chế độ thực thi linh hoạt:
-1. Chế độ HuggingFace Pre-trained (`use_hf_hub=True` hoặc tự động kích hoạt khi có GPU CUDA):
-   Fine-tune trực tiếp `vinai/phobert-base-v2` hoặc `uitnlp/visobert` với Weighted Cross-Entropy Loss.
-2. Chế độ PyTorch Contextual Transformer (`use_hf_hub=False` - tối ưu tốc độ trên CPU):
-   Kiến trúc Subword Embedding + Multi-Head Self-Attention + BiGRU + Contextual Attention Pooling
-   bằng PyTorch thuần, huấn luyện nhanh trên CPU trong ~10-15 giây mà vẫn nắm bắt ngữ cảnh sâu.
-"""
+"""Xây dựng và huấn luyện mô hình Contextual Self-Attention Transformer."""
 
 import os
 import time
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple
 
 import numpy as np
 import torch
@@ -23,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 class ToxicTextTorchDataset(Dataset):
-    """Dataset PyTorch cho chuỗi token indices và nhãn nhị phân Toxic/Non-toxic."""
+    """Dataset cho chuỗi token và nhãn phân loại."""
 
     def __init__(self, sequences: np.ndarray, subword_feats: np.ndarray, labels: np.ndarray):
         self.sequences = torch.tensor(sequences, dtype=torch.long)
@@ -38,13 +27,7 @@ class ToxicTextTorchDataset(Dataset):
 
 
 class ContextualSelfAttentionNet(nn.Module):
-    """
-    Kiến trúc Transformer Self-Attention kết hợp BiGRU & Subword Representation (PhoBERT-style architecture):
-    - Word/Subword Embedding + Learned Positional Encoding
-    - Bidirectional GRU + Transformer Encoder Layer (Multi-Head Self-Attention)
-    - Clause-Position Aware Attention Pooling (nắm bắt quan hệ mệnh đề trước-sau như 'nghe đồn... nhưng thực tế...')
-    - Classification Head với Dropout & LayerNorm
-    """
+    """Mô hình Self-Attention kết hợp BiGRU và biểu diễn Subword."""
 
     def __init__(
         self,
@@ -85,7 +68,6 @@ class ContextualSelfAttentionNet(nn.Module):
             nn.Dropout(dropout),
         )
 
-        # Kết hợp: [Attention Pooled + Early-Clause State + Late-Clause State + Subword Representation]
         self.classifier = nn.Sequential(
             nn.Linear(embed_dim * 4, embed_dim),
             nn.LayerNorm(embed_dim),
@@ -106,16 +88,16 @@ class ContextualSelfAttentionNet(nn.Module):
         x = self.transformer_encoder(x, src_key_padding_mask=padding_mask)
         x = x * valid_mask
 
-        # 1. Global Self-Attention Pooling
+        # Self-Attention Pooling
         scores = self.attn_weights(x).squeeze(-1)
         scores = scores.masked_fill(padding_mask, -1e9)
         alpha = torch.softmax(scores, dim=-1).unsqueeze(-1)
         seq_repr = torch.sum(x * alpha, dim=1)
 
-        # 2. Positional Clause Pooling (nửa đầu câu vs nửa cuối câu dựa trên độ dài thực của câu)
-        lengths = valid_mask.sum(dim=1).clamp(min=2.0)  # (B, 1)
-        mid_idx = (lengths / 2.0).unsqueeze(1)          # (B, 1, 1)
-        pos_grid = positions.unsqueeze(-1).float()      # (B, L, 1)
+        # Mệnh đề trước và sau theo độ dài câu
+        lengths = valid_mask.sum(dim=1).clamp(min=2.0)
+        mid_idx = (lengths / 2.0).unsqueeze(1)
+        pos_grid = positions.unsqueeze(-1).float()
 
         early_mask = (pos_grid < mid_idx).float() * valid_mask
         late_mask = (pos_grid >= mid_idx).float() * valid_mask
@@ -130,10 +112,7 @@ class ContextualSelfAttentionNet(nn.Module):
 
 
 class HuggingFacePhoBERTWrapper:
-    """
-    Fine-tune trực tiếp mô hình `vinai/phobert-base-v2` hoặc `uitnlp/visobert`
-    từ HuggingFace Hub (sử dụng khi có GPU CUDA hoặc khi bật `use_hf_hub=True`).
-    """
+    """Wrapper fine-tune mô hình Pre-trained từ HuggingFace."""
 
     def __init__(
         self,
@@ -183,7 +162,6 @@ class HuggingFacePhoBERTWrapper:
         )
         train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
 
-        # Trọng số lớp cân bằng cho bài toán Toxic
         n_pos = max(1, int(np.sum(y_train == 1)))
         n_neg = max(1, int(np.sum(y_train == 0)))
         class_weights = torch.tensor([1.0, n_neg / n_pos], dtype=torch.float32, device=self.device)
@@ -228,9 +206,7 @@ def train_modern_transformer_model(
     save_dir: str = "outputs/models",
     seed: int = 42,
 ) -> Dict[str, Any]:
-    """
-    Huấn luyện mô hình hiện đại (Ý 4 bổ sung - Hướng 1: Kiến trúc PhoBERT / Contextual Transformer).
-    """
+    """Huấn luyện mô hình Transformer cho phân loại văn bản."""
     os.makedirs(save_dir, exist_ok=True)
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -238,7 +214,7 @@ def train_modern_transformer_model(
     t0 = time.time()
 
     if use_hf_hub:
-        print("[Bước 4b] Đang Fine-tune HuggingFace PhoBERT (`vinai/phobert-base-v2`)...")
+        print("[Transformer] Đang Fine-tune PhoBERT (`vinai/phobert-base-v2`)...")
         hf_trainer = HuggingFacePhoBERTWrapper(model_name="vinai/phobert-base-v2")
         y_pred, y_prob = hf_trainer.fit_and_predict(train_texts, y_train, val_texts, y_val, test_texts)
         train_time = time.time() - t0
@@ -253,8 +229,8 @@ def train_modern_transformer_model(
             "best_params": {"model": "vinai/phobert-base-v2", "loss": "WeightedCrossEntropy"},
         }
 
-    print("[Bước 4b] Đang huấn luyện Mô hình hiện đại: PhoBERT-style Contextual Transformer (PyTorch)...")
-    # 1. Xây dựng từ điển Token & Subword N-gram representation
+    print("[Transformer] Đang huấn luyện mô hình Contextual Self-Attention...")
+    # Tạo từ điển
     word_counts: Dict[str, int] = {}
     for doc in train_texts:
         for tok in doc.split():
@@ -288,7 +264,6 @@ def train_modern_transformer_model(
             late_list.append(" ".join(toks[mid:]))
         return early_list, late_list
 
-    # Trích xuất đặc trưng Subword BPE/Char + Word N-gram ngữ cảnh kết hợp vị trí mệnh đề (Early vs Late Clause)
     subword_vec = TfidfVectorizer(
         analyzer="char_wb",
         ngram_range=(3, 5),
@@ -347,7 +322,7 @@ def train_modern_transformer_model(
 
     for epoch in range(epochs):
         model.train()
-        print(f"  [PhoBERT Transformer] Đang chạy Epoch {epoch+1}/{epochs}...")
+        print(f"  [Epoch {epoch+1}/{epochs}]")
         for b_ids, b_sub, b_y in train_loader:
             b_ids, b_sub, b_y = b_ids.to(device), b_sub.to(device), b_y.to(device)
             optimizer.zero_grad()

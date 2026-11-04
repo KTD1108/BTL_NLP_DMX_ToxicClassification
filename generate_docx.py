@@ -1,9 +1,4 @@
-"""
-Script tạo file Báo cáo Word (.docx) chuyên nghiệp chuẩn học thuật PTIT
-cho Bài tập lớn 1 - Chủ đề 2c: Phân loại Toxic và Non-toxic trên Điện Máy Xanh.
-Quy mô dữ liệu: 15.183 đánh giá THẬT 100% từ Điện Máy Xanh.
-Mô hình: Bag of Words & TF-IDF kết hợp Naive Bayes, SVM và PhoBERT Transformer.
-"""
+"""Script xuất báo cáo BTL1 Chủ đề 2c định dạng Word (.docx)."""
 
 import os
 import docx

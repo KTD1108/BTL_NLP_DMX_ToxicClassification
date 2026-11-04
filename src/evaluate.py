@@ -1,13 +1,4 @@
-"""
-Bước 5: Đánh giá mô hình và trực quan hóa kết quả thực nghiệm.
-Sử dụng đầy đủ các chỉ số:
-- Accuracy
-- Precision (lớp Toxic & Macro)
-- Recall (lớp Toxic & Macro)
-- F1-Score (lớp Toxic & Macro)
-- Confusion Matrix (Ma trận nhầm lẫn)
-- Đường cong ROC-AUC và Phân tích lỗi (Error Analysis)
-"""
+"""Đánh giá mô hình và trực quan hóa kết quả thực nghiệm."""
 
 import os
 from typing import List, Dict, Any
@@ -38,9 +29,7 @@ def evaluate_all_models(
     experiment_outputs: List[Dict[str, Any]],
     output_dir: str = "outputs",
 ) -> pd.DataFrame:
-    """
-    Tính toán toàn bộ chỉ số đánh giá cho từng tổ hợp (Đặc trưng × Thuật toán) và lưu bảng kết quả.
-    """
+    """Tính toán các chỉ số đánh giá cho từng mô hình và lưu bảng kết quả."""
     os.makedirs(output_dir, exist_ok=True)
     rows = []
 
@@ -87,10 +76,10 @@ def evaluate_all_models(
 
 
 def plot_eda_figures(df: pd.DataFrame, fig_dir: str = "outputs/figures") -> None:
-    """Vẽ biểu đồ thống kê mô tả bộ dữ liệu bình luận Điện Máy Xanh."""
+    """Vẽ biểu đồ thống kê mô tả bộ dữ liệu."""
     os.makedirs(fig_dir, exist_ok=True)
 
-    # Hình 1: Phân bố nhãn Toxic vs Non-toxic và theo Ngành hàng Điện Máy Xanh
+    # Phân bố nhãn và ngành hàng
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.5), dpi=150)
 
     label_counts = df["label"].map({0: "Non-toxic (0)", 1: "Toxic (1)"}).value_counts()
@@ -124,7 +113,7 @@ def plot_eda_figures(df: pd.DataFrame, fig_dir: str = "outputs/figures") -> None
     plt.savefig(os.path.join(fig_dir, "01_eda_distribution.png"), bbox_inches="tight")
     plt.close(fig)
 
-    # Hình 2: Phân bố độ dài bình luận (số từ sau tách từ)
+    # Phân bố độ dài từ
     fig, ax = plt.subplots(figsize=(9, 5), dpi=150)
     sns.histplot(
         data=df,
@@ -135,8 +124,8 @@ def plot_eda_figures(df: pd.DataFrame, fig_dir: str = "outputs/figures") -> None
         palette={"Non-toxic (0)": "#2b8cbe", "Toxic (1)": "#e34a33"},
         ax=ax,
     )
-    ax.set_title("Phân bố độ dài câu bình luận (sau khi tách từ tiếng Việt)", fontsize=13, fontweight="bold")
-    ax.set_xlabel("Số lượng từ (Word tokens)")
+    ax.set_title("Phân bố độ dài câu bình luận", fontsize=13, fontweight="bold")
+    ax.set_xlabel("Số lượng từ")
     ax.set_ylabel("Tần suất")
     plt.tight_layout()
     plt.savefig(os.path.join(fig_dir, "02_word_length_distribution.png"), bbox_inches="tight")
@@ -149,10 +138,10 @@ def plot_evaluation_figures(
     df_results: pd.DataFrame,
     fig_dir: str = "outputs/figures",
 ) -> None:
-    """Vẽ biểu đồ so sánh hiệu suất, Grid Confusion Matrix và đường cong ROC-AUC."""
+    """Vẽ biểu đồ so sánh kết quả các mô hình."""
     os.makedirs(fig_dir, exist_ok=True)
 
-    # Hình 3: Biểu đồ so sánh các chỉ số Accuracy, Precision, Recall, F1-Score
+    # Biểu đồ so sánh metrics
     fig, ax = plt.subplots(figsize=(14, 7), dpi=150)
     short_names = [
         f"{r['Phương pháp trích chọn đặc trưng'].split('(')[0].strip()}\n+ {r['Mô hình chi tiết']}"
@@ -167,7 +156,7 @@ def plot_evaluation_figures(
     ax.bar(x + 1.5 * w, df_results["F1-Score (Toxic %)"], width=w, label="F1-Score - Toxic (%)", color="#e6550d")
 
     ax.set_title(
-        "So sánh hiệu suất giữa các phương pháp trích chọn đặc trưng và thuật toán phân loại",
+        "So sánh hiệu suất giữa các phương pháp trích chọn đặc trưng và thuật toán",
         fontsize=13,
         fontweight="bold",
     )
@@ -185,7 +174,7 @@ def plot_evaluation_figures(
     plt.savefig(os.path.join(fig_dir, "03_model_comparison_metrics.png"), bbox_inches="tight")
     plt.close(fig)
 
-    # Hình 4: Lưới Confusion Matrices (3x3 cho toàn bộ 9 mô hình)
+    # Ma trận nhầm lẫn
     n_models = len(experiment_outputs)
     ncols = 3
     nrows = (n_models + ncols - 1) // ncols
@@ -207,18 +196,18 @@ def plot_evaluation_figures(
         )
         title_str = f"({idx+1}) {exp['feature_name'].split('(')[0].strip()}\n{exp['model_name']}"
         axes[idx].set_title(title_str, fontsize=10.5, fontweight="bold")
-        axes[idx].set_xlabel("Nhãn dự đoán (Predicted)")
-        axes[idx].set_ylabel("Nhãn thực tế (Actual)")
+        axes[idx].set_xlabel("Nhãn dự đoán")
+        axes[idx].set_ylabel("Nhãn thực tế")
 
     for j in range(n_models, len(axes)):
         axes[j].axis("off")
 
-    plt.suptitle("Ma trận nhầm lẫn (Confusion Matrix) trên tập Kiểm tra (Test Set)", fontsize=14, fontweight="bold", y=1.01)
+    plt.suptitle("Ma trận nhầm lẫn (Confusion Matrix) trên tập Test", fontsize=14, fontweight="bold", y=1.01)
     plt.tight_layout()
     plt.savefig(os.path.join(fig_dir, "04_confusion_matrices_grid.png"), bbox_inches="tight")
     plt.close(fig)
 
-    # Hình 5: Đường cong ROC-AUC
+    # Đường cong ROC
     fig, ax = plt.subplots(figsize=(9.5, 6.5), dpi=150)
     for exp in experiment_outputs:
         fpr, tpr, _ = roc_curve(y_test, exp["y_prob"])
@@ -227,8 +216,8 @@ def plot_evaluation_figures(
         ax.plot(fpr, tpr, lw=2, label=label_curve)
 
     ax.plot([0, 1], [0, 1], "k--", lw=1.2, label="Ngẫu nhiên (AUC = 50.0%)")
-    ax.set_title("Đường cong ROC (Receiver Operating Characteristic) trên tập Test", fontsize=13, fontweight="bold")
-    ax.set_xlabel("False Positive Rate (Tỷ lệ báo động giả)")
+    ax.set_title("Đường cong ROC trên tập Test", fontsize=13, fontweight="bold")
+    ax.set_xlabel("False Positive Rate")
     ax.set_ylabel("True Positive Rate (Recall)")
     ax.legend(loc="lower right", fontsize=8.5)
     ax.grid(alpha=0.3)
@@ -242,10 +231,7 @@ def export_error_analysis(
     experiment_outputs: List[Dict[str, Any]],
     output_dir: str = "outputs",
 ) -> pd.DataFrame:
-    """
-    Xuất bảng phân tích các mẫu dự đoán sai (False Positives & False Negatives)
-    giữa BoW+NB, TF-IDF+SVM và PhoBERT Transformer để phục vụ thảo luận báo cáo.
-    """
+    """Xuất bảng phân tích các mẫu dự đoán sai trên tập Test."""
     available_cols = [c for c in ["comment_id", "category", "product_name", "source", "sub_group", "raw_text", "clean_text", "label"] if c in df_test.columns]
     df_err = df_test[available_cols].copy()
 
@@ -253,7 +239,6 @@ def export_error_analysis(
         key = exp["full_name"]
         df_err[f"pred_{key}"] = exp["y_pred"]
 
-    # Lọc các câu mà ít nhất 1 trong 3 đại diện chính dự đoán sai
     bow_nb_col = "pred_Bag of Words (BoW) + Multinomial Naive Bayes"
     tfidf_svm_col = "pred_TF-IDF (Word + Char N-gram) + SVM (LinearSVC)"
     phobert_col = [c for c in df_err.columns if "PhoBERT" in c][0]
