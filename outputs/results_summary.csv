@@ -1,0 +1,6 @@
+﻿STT,Phương pháp trích chọn đặc trưng,Nhóm thuật toán,Mô hình chi tiết,Tên tổ hợp,Accuracy,Precision (Toxic %),Recall (Toxic %),F1-Score (Toxic %),Macro-F1 (%),ROC-AUC (%),TN,FP,FN,TP,Thời gian train (s)
+1,Bag of Words (BoW),Naive Bayes,Multinomial Naive Bayes,Bag of Words (BoW) + Multinomial Naive Bayes,89.86,43.67,72.25,54.44,74.37,89.42,1909,178,53,138,0.134
+2,Bag of Words (BoW),SVM,SVM (LinearSVC),Bag of Words (BoW) + SVM (LinearSVC),95.0,85.98,48.17,61.74,79.53,94.94,2072,15,99,92,1.732
+3,TF-IDF (Word + Char N-gram),Naive Bayes,Multinomial Naive Bayes,TF-IDF (Word + Char N-gram) + Multinomial Naive Bayes,90.65,46.1,68.06,54.97,74.88,92.57,1935,152,61,130,0.331
+4,TF-IDF (Word + Char N-gram),SVM,SVM (LinearSVC),TF-IDF (Word + Char N-gram) + SVM (LinearSVC),96.75,85.89,73.3,79.1,88.67,98.37,2064,23,51,140,0.321
+5,Contextual Embeddings (Subword + Self-Attention),Mô hình hiện đại (Ý 4),PhoBERT-style Transformer,Contextual Embeddings + PhoBERT Transformer,89.29,43.52,93.19,59.33,76.58,96.66,1856,231,13,178,113.25
