@@ -1,3 +1,5 @@
-Cấu hình Ngưỡng,Ngưỡng (Threshold),Accuracy,Precision (Toxic),Recall (Toxic),F1-Score (Toxic),Macro F1-Score,Weighted F1-Score,TP (Bắt đúng),FP (Bắt nhầm),FN (Bỏ sót),TN
-Ngưỡng mặc định (Default 0.0),+0.00,98.05%,52.00%,32.50%,0.4000,0.6950,0.9783,13,12,27,1948
-Ngưỡng tối ưu tự động (Tuned -0.10),-0.10,97.80%,43.75%,35.00%,0.3889,0.6888,0.9768,14,18,26,1942
+﻿Mô hình / Cấu hình,Không gian đặc trưng,Ngưỡng,Accuracy,Precision (Toxic),Recall (Toxic),F1-Score (Toxic),Macro F1-Score,TP,FP,FN,TN
+1. BoW (CountVectorizer) + Linear SVM,"Bag-of-Words Word (1, 2)",0.00,96.90%,66.67%,34.67%,0.4561,0.7201,26,13,49,1912
+2. TF-IDF đơn (Word Level) + Linear SVM,"TF-IDF Word (1, 2) + L2 Norm",0.00,96.85%,62.50%,40.00%,0.4878,0.7358,30,18,45,1907
+3. Linear SVM Nâng cấp (Ngưỡng 0.00),FeatureUnion (Word + Char_wb + Lexicon),+0.00,97.65%,75.00%,56.00%,0.6412,0.8145,42,14,33,1911
+4. Linear SVM Nâng cấp (Ngưỡng tối ưu +0.00),FeatureUnion (Word + Char_wb + Lexicon),+0.00,97.65%,75.00%,56.00%,0.6412,0.8145,42,14,33,1911

@@ -1,0 +1,25 @@
+{
+  "nguoi_phu_trach": "TV3",
+  "threshold": 0.28,
+  "chon_nguong_tren": "tap_validation",
+  "sieu_tham_so": {
+    "backbone": "vinai/phobert-base-v2",
+    "training_mode": "End-to-End Fine-Tuning (3 epochs, lr=2e-5, AdamW, GPU T4)",
+    "loss": "CrossEntropyLoss(weights=[1.0, 8.0])",
+    "max_len": 64,
+    "batch_size": 32
+  },
+  "random_seed": 42,
+  "metrics_test": {
+    "accuracy": 0.9715,
+    "precision_toxic": 0.625,
+    "recall_toxic": 0.6,
+    "f1_toxic": 0.6122448979591837,
+    "macro_f1": 0.7987256153434641,
+    "pr_auc": 0.6434143970071792,
+    "tp": 45,
+    "fp": 27,
+    "fn": 30,
+    "tn": 1898
+  }
+}

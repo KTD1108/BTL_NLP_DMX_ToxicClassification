@@ -1,0 +1,15 @@
+{
+  "nguoi_phu_trach": "TV1",
+  "threshold": 0.0,
+  "chon_nguong_tren": "mac_dinh",
+  "sieu_tham_so": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "max_features": 10000,
+    "class_weight": "balanced"
+  },
+  "random_seed": 42,
+  "ghi_chu": "Mô hình cơ sở BoW (CountVectorizer) + Linear SVM (class_weight=balanced)"
+}

@@ -1,27 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-THÀNH VIÊN 1: DATA ARCHITECT & SVM SPECIALIST
-Script: 3b_train_svm.py (Phiên bản nâng cấp FeatureUnion & Auto Threshold Tuning)
+BÀI TẬP LỚN 1 - XỬ LÝ NGÔN NGỮ TỰ NHIÊN (NLP)
+Thành viên 1: Kiều Tiến Đạt (B23DCKH020) - Data Architect & SVM Specialist
+Script: 3b_train_svm.py
 
-Nhiệm vụ theo 5 yêu cầu kỹ thuật:
-1. Chuẩn hóa từ lóng & Teencode e-commerce + Trích xuất đặc trưng từ khóa độc hại (ToxicLexiconFeatureExtractor).
-2. FeatureUnion 3 nhánh:
-   - word_tfidf: Word n-grams (1, 2), max_features=10000, sublinear_tf=True, min_df=2.
-   - char_tfidf: Character n-grams char_wb (3, 5), max_features=15000, sublinear_tf=True, min_df=2.
-   - lexicon_feat: Bộ đếm từ khóa độc hại (Lexicon count & binary flag).
-3. GridSearchCV với StratifiedKFold(n_splits=5, shuffle=True, random_state=42), scoring='f1_macro':
-   - 'C': [0.05, 0.1, 0.25, 0.5, 1.0]
-   - 'class_weight': [{0: 1, 1: 5}, {0: 1, 1: 10}, {0: 1, 1: 15}, {0: 1, 1: 20}, 'balanced']
-4. Tự động tìm ngưỡng quyết định tối ưu (Auto Threshold Tuning) trên tập Train bằng cross_val_predict:
-   - Quét threshold từ -0.50 đến +0.50 (bước nhảy 0.02) để tối ưu Macro F1 trên tập Train (Zero data leakage).
-5. Xuất kết quả đối sánh toàn diện trên tập Test độc lập (test.csv - 2.000 mẫu):
-   - So sánh trực quan Ngưỡng mặc định (0.0) vs Ngưỡng tối ưu tự động.
-   - Lưu trữ Model Pipeline (.joblib), CSV dự đoán, CSV chỉ số và biểu đồ Confusion Matrix sắc nét (300 DPI).
+Mục tiêu kỹ thuật:
+1. Huấn luyện mô hình cơ sở 1: BoW (CountVectorizer) + Linear SVM (class_weight='balanced').
+2. Huấn luyện mô hình cơ sở 2: TF-IDF đơn (TfidfVectorizer) + Linear SVM (class_weight='balanced').
+3. Huấn luyện mô hình nâng cấp: FeatureUnion 3 nhánh (Word TF-IDF + Char_wb TF-IDF + Lexicon)
+   kết hợp GridSearchCV (5-Folds) và tối ưu ngưỡng quyết định trên tập Train.
+4. Đánh giá đối sánh trên tập Test chuẩn vàng (data/test.csv - 2.000 mẫu).
+5. Xuất các file dự đoán chuẩn hóa nộp cho TV4 theo quy ước tại QUY_UOC_FILE_DU_DOAN.md.
 """
 
 import os
 import sys
 import re
+import json
 import joblib
 import pandas as pd
 import numpy as np
@@ -31,7 +26,7 @@ from scipy.sparse import csr_matrix
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, cross_val_predict
 from sklearn.metrics import (
@@ -43,7 +38,10 @@ from sklearn.metrics import (
     classification_report
 )
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.stdout.reconfigure(encoding='utf-8')
+
+import nlp_utils
 
 # Cấu hình thẩm mỹ đồ thị Matplotlib
 plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
@@ -53,18 +51,15 @@ sns.set_theme(style='whitegrid', font='DejaVu Sans')
 os.makedirs('models', exist_ok=True)
 os.makedirs('results', exist_ok=True)
 
-print("=" * 85)
-print("   THÀNH VIÊN 1: NÂNG CẤP LINEAR SVM - FEATUREUNION (WORD + CHAR + LEXICON)")
+print("=" * 88)
+print("   THÀNH VIÊN 1: ĐỐI SÁNH MÔ HÌNH LINEAR SVM (BoW vs TF-IDF ĐƠN vs TF-IDF NÂNG CẤP)")
 print("                 & AUTO THRESHOLD TUNING TRÊN DỮ LIỆU MẤT CÂN BẰNG (1:49)")
-print("=" * 85)
+print("=" * 88)
 
 # -----------------------------------------------------------------------------
 # 1. TÍCH HỢP MODULE TIỀN XỬ LÝ NLP_UTILS & BỘ TRÍCH XUẤT LEXICON FEATURE
 # -----------------------------------------------------------------------------
-import nlp_utils
-
 def normalize_slang(text):
-    """Sử dụng hàm chuẩn hóa từ lóng & teencode đồng bộ từ module dùng chung nlp_utils."""
     return nlp_utils.normalize_slang(text)
 
 TOXIC_KEYWORDS = [
@@ -98,10 +93,11 @@ class ToxicLexiconFeatureExtractor(BaseEstimator, TransformerMixin):
 # -----------------------------------------------------------------------------
 # 2. NẠP DỮ LIỆU & ÁP DỤNG CHUẨN HÓA TỪ LÓNG
 # -----------------------------------------------------------------------------
-print("\n[BƯỚC 1] Đang nạp và áp dụng tiền xử lý từ lóng trên các tập dữ liệu...")
-df_train = pd.read_csv('data/train.csv')
-df_val = pd.read_csv('data/val.csv')
-df_test = pd.read_csv('data/test.csv')
+DATA_DIR = os.environ.get('DATA_DIR', 'data')
+print(f"\n[BƯỚC 1] Đang nạp và chuẩn hóa từ lóng từ thư mục: {DATA_DIR}/...")
+df_train = pd.read_csv(os.path.join(DATA_DIR, 'train.csv'))
+df_val = pd.read_csv(os.path.join(DATA_DIR, 'val.csv'))
+df_test = pd.read_csv(os.path.join(DATA_DIR, 'test.csv'))
 
 X_train_raw = df_train['noi_dung_tien_xu_ly'].fillna('').astype(str)
 y_train = df_train['label'].astype(int)
@@ -115,12 +111,63 @@ X_test = X_test_raw.apply(normalize_slang)
 
 print(f" -> Tập Train: {len(X_train)} mẫu (Toxic: {y_train.sum()} ~ {y_train.mean()*100:.2f}%)")
 print(f" -> Tập Test:  {len(X_test)} mẫu (Toxic: {y_test.sum()} ~ {y_test.mean()*100:.2f}%)")
-print(f" -> Danh sách từ khóa độc hại theo dõi: {len(TOXIC_KEYWORDS)} cụm từ")
 
 # -----------------------------------------------------------------------------
-# 3. THIẾT KẾ PIPELINE FEATUREUNION (WORD + CHAR + LEXICON)
+# 3. HUẤN LUYỆN MÔ HÌNH CƠ SỞ 1: BoW (COUNTVECTORIZER) + LINEAR SVM
 # -----------------------------------------------------------------------------
-print("\n[BƯỚC 2] Khởi tạo Pipeline FeatureUnion 3 nhánh đặc trưng...")
+print("\n[BƯỚC 2] Huấn luyện Mô hình Cơ sở 1: BoW (CountVectorizer) + Linear SVM...")
+bow_pipeline = Pipeline([
+    ('bow', CountVectorizer(ngram_range=(1, 2), max_features=10000, min_df=2)),
+    ('clf', LinearSVC(class_weight='balanced', random_state=42, max_iter=5000))
+])
+bow_pipeline.fit(X_train, y_train)
+preds_bow = bow_pipeline.predict(X_test)
+cm_bow = confusion_matrix(y_test, preds_bow)
+
+metrics_bow = {
+    'Mô hình / Cấu hình': '1. BoW (CountVectorizer) + Linear SVM',
+    'Không gian đặc trưng': 'Bag-of-Words Word (1, 2)',
+    'Ngưỡng': '0.00',
+    'Accuracy': f"{accuracy_score(y_test, preds_bow)*100:.2f}%",
+    'Precision (Toxic)': f"{precision_score(y_test, preds_bow, pos_label=1, zero_division=0)*100:.2f}%",
+    'Recall (Toxic)': f"{recall_score(y_test, preds_bow, pos_label=1, zero_division=0)*100:.2f}%",
+    'F1-Score (Toxic)': f"{f1_score(y_test, preds_bow, pos_label=1, zero_division=0):.4f}",
+    'Macro F1-Score': f"{f1_score(y_test, preds_bow, average='macro'):.4f}",
+    'TP': cm_bow[1, 1], 'FP': cm_bow[0, 1], 'FN': cm_bow[1, 0], 'TN': cm_bow[0, 0]
+}
+print(f" -> BoW Result: Accuracy={metrics_bow['Accuracy']} | Prec={metrics_bow['Precision (Toxic)']} | Rec={metrics_bow['Recall (Toxic)']} | Toxic F1={metrics_bow['F1-Score (Toxic)']} | Macro F1={metrics_bow['Macro F1-Score']}")
+print(f"    TP: {cm_bow[1,1]}/{y_test.sum()} câu, FP: {cm_bow[0,1]} câu, FN: {cm_bow[1,0]} câu")
+
+# -----------------------------------------------------------------------------
+# 4. HUẤN LUYỆN MÔ HÌNH CƠ SỞ 2: TF-IDF ĐƠN + LINEAR SVM
+# -----------------------------------------------------------------------------
+print("\n[BƯỚC 3] Huấn luyện Mô hình Cơ sở 2: TF-IDF Đơn (TfidfVectorizer) + Linear SVM...")
+tfidf_single_pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer(ngram_range=(1, 2), max_features=10000, sublinear_tf=True, min_df=2)),
+    ('clf', LinearSVC(class_weight='balanced', random_state=42, max_iter=5000))
+])
+tfidf_single_pipeline.fit(X_train, y_train)
+preds_tfidf = tfidf_single_pipeline.predict(X_test)
+cm_tfidf = confusion_matrix(y_test, preds_tfidf)
+
+metrics_tfidf = {
+    'Mô hình / Cấu hình': '2. TF-IDF đơn (Word Level) + Linear SVM',
+    'Không gian đặc trưng': 'TF-IDF Word (1, 2) + L2 Norm',
+    'Ngưỡng': '0.00',
+    'Accuracy': f"{accuracy_score(y_test, preds_tfidf)*100:.2f}%",
+    'Precision (Toxic)': f"{precision_score(y_test, preds_tfidf, pos_label=1, zero_division=0)*100:.2f}%",
+    'Recall (Toxic)': f"{recall_score(y_test, preds_tfidf, pos_label=1, zero_division=0)*100:.2f}%",
+    'F1-Score (Toxic)': f"{f1_score(y_test, preds_tfidf, pos_label=1, zero_division=0):.4f}",
+    'Macro F1-Score': f"{f1_score(y_test, preds_tfidf, average='macro'):.4f}",
+    'TP': cm_tfidf[1, 1], 'FP': cm_tfidf[0, 1], 'FN': cm_tfidf[1, 0], 'TN': cm_tfidf[0, 0]
+}
+print(f" -> TF-IDF Result: Accuracy={metrics_tfidf['Accuracy']} | Prec={metrics_tfidf['Precision (Toxic)']} | Rec={metrics_tfidf['Recall (Toxic)']} | Toxic F1={metrics_tfidf['F1-Score (Toxic)']} | Macro F1={metrics_tfidf['Macro F1-Score']}")
+print(f"    TP: {cm_tfidf[1,1]}/{y_test.sum()} câu, FP: {cm_tfidf[0,1]} câu, FN: {cm_tfidf[1,0]} câu")
+
+# -----------------------------------------------------------------------------
+# 5. HUẤN LUYỆN MÔ HÌNH NÂNG CẤP 3: FEATUREUNION 3 NHÁNH & GRIDSEARCHCV
+# -----------------------------------------------------------------------------
+print("\n[BƯỚC 4] Huấn luyện Mô hình Nâng cấp 3: FeatureUnion 3 nhánh & GridSearchCV...")
 
 feature_union = FeatureUnion([
     ('word_tfidf', TfidfVectorizer(
@@ -144,11 +191,6 @@ full_pipeline = Pipeline([
     ('clf', LinearSVC(random_state=42, max_iter=5000))
 ])
 
-# -----------------------------------------------------------------------------
-# 4. TỐI ƯU SIÊU THAM SỐ BẰNG GRIDSEARCHCV
-# -----------------------------------------------------------------------------
-print("\n[BƯỚC 3] Thực thi GridSearchCV với StratifiedKFold (5-folds, scoring='f1_macro')...")
-
 param_grid = {
     'clf__C': [0.05, 0.1, 0.25, 0.5, 1.0],
     'clf__class_weight': [{0: 1, 1: 5}, {0: 1, 1: 10}, {0: 1, 1: 15}, {0: 1, 1: 20}, 'balanced']
@@ -162,22 +204,19 @@ grid_search = GridSearchCV(
     cv=cv,
     scoring='f1_macro',
     n_jobs=-1,
-    verbose=1
+    verbose=0
 )
 
 grid_search.fit(X_train, y_train)
-
-print(f" -> Bộ siêu tham số tối ưu nhất: {grid_search.best_params_}")
-print(f" -> Điểm Macro F1 trung bình tốt nhất trên CV 5-folds (Train): {grid_search.best_score_:.4f}")
-
 best_pipeline = grid_search.best_estimator_
 
-# -----------------------------------------------------------------------------
-# 5. TỰ ĐỘNG TÌM NGƯỠNG QUYẾT ĐỊNH TỐI ƯU (AUTO THRESHOLD TUNING) TRÊN TRAIN
-# -----------------------------------------------------------------------------
-print("\n[BƯỚC 4] Tự động tìm ngưỡng quyết định tối ưu (Auto Threshold Tuning) trên tập Train...")
-print(" -> Sử dụng cross_val_predict(method='decision_function') để tính điểm không thiên vị...")
+print(f" -> Siêu tham số tối ưu (GridSearchCV): {grid_search.best_params_}")
+print(f" -> Điểm Macro F1 trung bình trên 5-Folds CV (Train): {grid_search.best_score_:.4f}")
 
+# -----------------------------------------------------------------------------
+# 6. AUTO THRESHOLD TUNING TRÊN TẬP TRAIN (ZERO DATA LEAKAGE)
+# -----------------------------------------------------------------------------
+print("\n[BƯỚC 5] Tự động tìm ngưỡng quyết định tối ưu (Auto Threshold Tuning) trên Train...")
 cv_decision_scores = cross_val_predict(
     best_pipeline,
     X_train,
@@ -190,101 +229,73 @@ cv_decision_scores = cross_val_predict(
 threshold_range = np.arange(-0.50, 0.52, 0.02)
 best_threshold = 0.0
 best_cv_macro_f1 = -1.0
-cv_tuning_history = []
 
 for th in threshold_range:
     th = round(th, 2)
     preds_th = (cv_decision_scores >= th).astype(int)
     f1_macro_th = f1_score(y_train, preds_th, average='macro', zero_division=0)
-    f1_toxic_th = f1_score(y_train, preds_th, pos_label=1, zero_division=0)
-    recall_toxic_th = recall_score(y_train, preds_th, pos_label=1, zero_division=0)
-    precision_toxic_th = precision_score(y_train, preds_th, pos_label=1, zero_division=0)
-
-    cv_tuning_history.append({
-        'threshold': th,
-        'macro_f1': f1_macro_th,
-        'toxic_f1': f1_toxic_th,
-        'toxic_recall': recall_toxic_th,
-        'toxic_precision': precision_toxic_th
-    })
-
     if f1_macro_th > best_cv_macro_f1:
         best_cv_macro_f1 = f1_macro_th
         best_threshold = th
 
-print(f" -> Ngưỡng tối ưu tự động tìm được trên Train: Threshold = {best_threshold:+.2f}")
-print(f" -> Điểm Train Macro F1 tại ngưỡng tối ưu: {best_cv_macro_f1:.4f} (Không tiếp xúc tập Test!)")
+print(f" -> Ngưỡng tối ưu tự động trên Train: Threshold = {best_threshold:+.2f} (Macro F1 = {best_cv_macro_f1:.4f})")
 
 # -----------------------------------------------------------------------------
-# 6. ĐÁNH GIÁ ĐỐI SÁNH TRỰC QUAN TRÊN TẬP TEST ĐỘC LẬP (2.000 MẪU)
+# 7. ĐÁNH GIÁ ĐỐI SÁNH TRÊN TẬP TEST ĐỘC LẬP (2.000 MẪU)
 # -----------------------------------------------------------------------------
-print("\n" + "=" * 85)
-print("     [BƯỚC 5] ĐÁNH GIÁ ĐỐI SÁNH TRÊN TẬP TEST ĐỘC LẬP (2.000 MẪU - TEST.CSV)")
-print("=" * 85)
-
-# Tính decision_function trên tập Test một lần duy nhất
+print("\n[BƯỚC 6] Đánh giá trên tập Test độc lập (2.000 mẫu)...")
 test_decision_scores = best_pipeline.decision_function(X_test)
 
 def compute_metrics(y_true, scores, threshold, setting_name):
     preds = (scores >= threshold).astype(int)
     acc = accuracy_score(y_true, preds)
-    prec0 = precision_score(y_true, preds, pos_label=0)
-    rec0 = recall_score(y_true, preds, pos_label=0)
-    f1_0 = f1_score(y_true, preds, pos_label=0)
-
     prec1 = precision_score(y_true, preds, pos_label=1, zero_division=0)
     rec1 = recall_score(y_true, preds, pos_label=1, zero_division=0)
     f1_1 = f1_score(y_true, preds, pos_label=1, zero_division=0)
-
     macro_f1 = f1_score(y_true, preds, average='macro')
-    weighted_f1 = f1_score(y_true, preds, average='weighted')
     cm = confusion_matrix(y_true, preds)
 
     return {
-        'Cấu hình Ngưỡng': setting_name,
-        'Ngưỡng (Threshold)': f"{threshold:+.2f}",
+        'Mô hình / Cấu hình': setting_name,
+        'Không gian đặc trưng': 'FeatureUnion (Word + Char_wb + Lexicon)',
+        'Ngưỡng': f"{threshold:+.2f}",
         'Accuracy': f"{acc*100:.2f}%",
         'Precision (Toxic)': f"{prec1*100:.2f}%",
         'Recall (Toxic)': f"{rec1*100:.2f}%",
         'F1-Score (Toxic)': f"{f1_1:.4f}",
         'Macro F1-Score': f"{macro_f1:.4f}",
-        'Weighted F1-Score': f"{weighted_f1:.4f}",
-        'TP (Bắt đúng)': cm[1,1],
-        'FP (Bắt nhầm)': cm[0,1],
-        'FN (Bỏ sót)': cm[1,0],
-        'TN': cm[0,0],
+        'TP': cm[1,1], 'FP': cm[0,1], 'FN': cm[1,0], 'TN': cm[0,0],
         '_raw_preds': preds,
         '_raw_cm': cm
     }
 
-eval_default = compute_metrics(y_test, test_decision_scores, 0.0, "Ngưỡng mặc định (Default 0.0)")
-eval_optimal = compute_metrics(y_test, test_decision_scores, best_threshold, f"Ngưỡng tối ưu tự động (Tuned {best_threshold:+.2f})")
+eval_upgraded_default = compute_metrics(y_test, test_decision_scores, 0.0, "3. Linear SVM Nâng cấp (Ngưỡng 0.00)")
+eval_upgraded_optimal = compute_metrics(y_test, test_decision_scores, best_threshold, f"4. Linear SVM Nâng cấp (Ngưỡng tối ưu {best_threshold:+.2f})")
 
-# Bảng so sánh trực quan
-df_compare = pd.DataFrame([eval_default, eval_optimal])
+# Tổng kết Bảng so sánh 4 cấu hình
+all_results = [metrics_bow, metrics_tfidf, eval_upgraded_default, eval_upgraded_optimal]
+df_summary = pd.DataFrame(all_results)
+
 display_cols = [
-    'Cấu hình Ngưỡng', 'Ngưỡng (Threshold)', 'Accuracy',
+    'Mô hình / Cấu hình', 'Ngưỡng', 'Accuracy',
     'Precision (Toxic)', 'Recall (Toxic)', 'F1-Score (Toxic)',
-    'Macro F1-Score', 'Weighted F1-Score'
+    'Macro F1-Score', 'TP', 'FP', 'FN'
 ]
-print("\n" + df_compare[display_cols].to_string(index=False))
 
-print("\nChi tiết Ma trận nhầm lẫn (Confusion Matrix):")
-print(f"1. {eval_default['Cấu hình Ngưỡng']}:")
-print(f"   - Bắt đúng Toxic (TP): {eval_default['TP (Bắt đúng)']}/40 câu | Bắt nhầm (FP): {eval_default['FP (Bắt nhầm)']} câu | Bỏ sót (FN): {eval_default['FN (Bỏ sót)']} câu")
-print(f"2. {eval_optimal['Cấu hình Ngưỡng']}:")
-print(f"   - Bắt đúng Toxic (TP): {eval_optimal['TP (Bắt đúng)']}/40 câu | Bắt nhầm (FP): {eval_optimal['FP (Bắt nhầm)']} câu | Bỏ sót (FN): {eval_optimal['FN (Bỏ sót)']} câu")
+print("\n" + "=" * 88)
+print("             BẢNG TỔNG KẾT ĐỐI SÁNH HIỆU NĂNG CÁC BIẾN THỂ LINEAR SVM")
+print("=" * 88)
+print(df_summary[display_cols].to_string(index=False))
 
 # -----------------------------------------------------------------------------
-# 7. TRỰC QUAN HÓA MA TRẬN NHẦM LẪN (300 DPI)
+# 8. TRỰC QUAN HÓA MA TRẬN NHẦM LẪN (300 DPI)
 # -----------------------------------------------------------------------------
-print("\n[BƯỚC 6] Đang vẽ và xuất biểu đồ Ma trận nhầm lẫn đối sánh 300 DPI...")
-
+print("\n[BƯỚC 7] Đang vẽ và xuất biểu đồ Ma trận nhầm lẫn đối sánh...")
 fig, axes = plt.subplots(1, 2, figsize=(13, 5), dpi=300)
 
-for ax, res_dict in zip(axes, [eval_default, eval_optimal]):
+for ax, res_dict in zip(axes, [eval_upgraded_default, eval_upgraded_optimal]):
     cm = res_dict['_raw_cm']
-    title = f"{res_dict['Cấu hình Ngưỡng']}\nF1(Toxic)={res_dict['F1-Score (Toxic)']} | Macro-F1={res_dict['Macro F1-Score']}"
+    title = f"{res_dict['Mô hình / Cấu hình']}\nF1(Toxic)={res_dict['F1-Score (Toxic)']} | Macro-F1={res_dict['Macro F1-Score']}"
     sns.heatmap(
         cm,
         annot=True,
@@ -308,16 +319,15 @@ plt.close()
 print(f" -> Đã lưu biểu đồ: {cm_plot_path}")
 
 # -----------------------------------------------------------------------------
-# 8. LƯU ARTIFACTS: MODEL PIPELINE, DỰ ĐOÁN VÀ CHỈ SỐ
+# 9. LƯU ARTIFACTS
 # -----------------------------------------------------------------------------
-print("\n[BƯỚC 7] Đang lưu trữ toàn bộ Artifacts...")
+print("\n[BƯỚC 8] Đang lưu trữ toàn bộ Artifacts...")
+joblib.dump(best_pipeline, 'models/best_svm_pipeline.joblib')
+joblib.dump(bow_pipeline, 'models/baseline_bow_svm.joblib')
+joblib.dump(tfidf_single_pipeline, 'models/baseline_tfidf_svm.joblib')
+print(" -> Đã lưu 3 mô hình (.joblib) vào thư mục models/")
 
-# Lưu toàn bộ Pipeline
-model_save_path = 'models/best_svm_pipeline.joblib'
-joblib.dump(best_pipeline, model_save_path)
-print(f" -> Đã lưu Pipeline hoàn chỉnh vào: {model_save_path}")
-
-# Lưu kết quả dự đoán chi tiết 2.000 mẫu
+# Lưu dự đoán 2.000 mẫu test
 df_pred_test = pd.DataFrame({
     'stt': range(1, len(df_test) + 1),
     'review_id': df_test['review_id'],
@@ -325,20 +335,105 @@ df_pred_test = pd.DataFrame({
     'noi_dung_goc': df_test['noi_dung_goc'],
     'noi_dung_chuan_hoa_slang': X_test,
     'true_label': y_test,
-    'decision_score': np.round(test_decision_scores, 4),
-    'pred_default_th0': eval_default['_raw_preds'],
-    'pred_optimal_th': eval_optimal['_raw_preds']
+    'pred_bow_svm': preds_bow,
+    'pred_tfidf_single_svm': preds_tfidf,
+    'decision_score_upgraded': np.round(test_decision_scores, 4),
+    'pred_upgraded_th0': eval_upgraded_default['_raw_preds'],
+    'pred_upgraded_opt': eval_upgraded_optimal['_raw_preds']
 })
 pred_path = 'results/tv1_svm_test_predictions.csv'
-df_pred_test.to_csv(pred_path, index=False, encoding='utf-8')
-print(f" -> Đã lưu kết quả dự đoán 2.000 mẫu tập Test: {pred_path}")
+df_pred_test.to_csv(pred_path, index=False, encoding='utf-8-sig')
+print(f" -> Đã lưu kết quả dự đoán chi tiết 2.000 mẫu: {pred_path}")
 
-# Lưu file tóm tắt chỉ số số liệu
+# Lưu metrics CSV
 summary_path = 'results/tv1_svm_metrics.csv'
-df_save_metrics = df_compare.drop(columns=['_raw_preds', '_raw_cm'])
-df_save_metrics.to_csv(summary_path, index=False, encoding='utf-8')
-print(f" -> Đã lưu bảng chỉ số hiệu năng: {summary_path}")
+df_save_metrics = df_summary.drop(columns=['_raw_preds', '_raw_cm'], errors='ignore')
+df_save_metrics.to_csv(summary_path, index=False, encoding='utf-8-sig')
+print(f" -> Đã lưu bảng tổng kết metrics: {summary_path}")
 
-print("\n" + "=" * 85)
-print("     HOÀN TẤT NÂNG CẤP TOÀN BỘ 5 YÊU CẦU KỸ THUẬT CỦA THÀNH VIÊN 1!")
-print("=" * 85)
+# -----------------------------------------------------------------------------
+# 10. XUẤT FILE DỰ ĐOÁN NỘP CHO THÀNH VIÊN 4 THEO QUY_UOC_FILE_DU_DOAN.md
+# -----------------------------------------------------------------------------
+print("\n[BƯỚC 9] Xuất file dự đoán chuẩn hóa nộp TV4 (results/predictions/)...")
+pred_dir = os.path.join('results', 'predictions')
+os.makedirs(pred_dir, exist_ok=True)
+
+# 1. svm_bow (BoW + Linear SVM)
+scores_bow = np.round(bow_pipeline.decision_function(X_test), 4)
+th_bow = 0.0
+pd.DataFrame({
+    'review_id': df_test['review_id'],
+    'label': y_test,
+    'score': scores_bow,
+    'pred': (scores_bow >= th_bow).astype(int)
+}).to_csv(os.path.join(pred_dir, 'svm_bow.csv'), index=False, encoding='utf-8-sig')
+
+with open(os.path.join(pred_dir, 'svm_bow_info.json'), 'w', encoding='utf-8') as f:
+    json.dump({
+        'nguoi_phu_trach': 'TV1',
+        'threshold': float(th_bow),
+        'chon_nguong_tren': 'mac_dinh',
+        'sieu_tham_so': {
+            'ngram_range': [1, 2],
+            'max_features': 10000,
+            'class_weight': 'balanced'
+        },
+        'random_seed': 42,
+        'ghi_chu': 'Mô hình cơ sở BoW (CountVectorizer) + Linear SVM (class_weight=balanced)'
+    }, f, ensure_ascii=False, indent=2)
+print(" -> Đã xuất: results/predictions/svm_bow.csv & svm_bow_info.json")
+
+# 2. svm_tfidf (TF-IDF FeatureUnion nâng cấp + Linear SVM)
+scores_tfidf = np.round(test_decision_scores, 4)
+th_tfidf = 0.0
+pd.DataFrame({
+    'review_id': df_test['review_id'],
+    'label': y_test,
+    'score': scores_tfidf,
+    'pred': (scores_tfidf >= th_tfidf).astype(int)
+}).to_csv(os.path.join(pred_dir, 'svm_tfidf.csv'), index=False, encoding='utf-8-sig')
+
+with open(os.path.join(pred_dir, 'svm_tfidf_info.json'), 'w', encoding='utf-8') as f:
+    json.dump({
+        'nguoi_phu_trach': 'TV1',
+        'threshold': float(th_tfidf),
+        'chon_nguong_tren': 'mac_dinh',
+        'sieu_tham_so': {
+            'C': 0.1,
+            'class_weight': {'0': 1, '1': 15},
+            'features': 'FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)'
+        },
+        'random_seed': 42,
+        'ghi_chu': 'Mô hình tối ưu FeatureUnion 3 nhánh (Word+Char+Lexicon) + GridSearchCV C=0.1, weight={0:1,1:15}'
+    }, f, ensure_ascii=False, indent=2)
+print(" -> Đã xuất: results/predictions/svm_tfidf.csv & svm_tfidf_info.json")
+
+# 3. svm_tfidf_single (TF-IDF đơn Word Level Baseline + Linear SVM)
+scores_tfidf_single = np.round(tfidf_single_pipeline.decision_function(X_test), 4)
+th_single = 0.0
+pd.DataFrame({
+    'review_id': df_test['review_id'],
+    'label': y_test,
+    'score': scores_tfidf_single,
+    'pred': (scores_tfidf_single >= th_single).astype(int)
+}).to_csv(os.path.join(pred_dir, 'svm_tfidf_single.csv'), index=False, encoding='utf-8-sig')
+
+with open(os.path.join(pred_dir, 'svm_tfidf_single_info.json'), 'w', encoding='utf-8') as f:
+    json.dump({
+        'nguoi_phu_trach': 'TV1',
+        'threshold': float(th_single),
+        'chon_nguong_tren': 'mac_dinh',
+        'sieu_tham_so': {
+            'ngram_range': [1, 2],
+            'sublinear_tf': True,
+            'max_features': 10000,
+            'class_weight': 'balanced'
+        },
+        'random_seed': 42,
+        'ghi_chu': 'Mô hình cơ sở TF-IDF đơn Word Level + Linear SVM (class_weight=balanced)'
+    }, f, ensure_ascii=False, indent=2)
+print(" -> Đã xuất: results/predictions/svm_tfidf_single.csv & svm_tfidf_single_info.json")
+
+print("\n" + "=" * 88)
+print("     HOÀN THÀNH HUẤN LUYỆN ĐỐI SÁNH VÀ XUẤT PREDICTIONS NỘP THÀNH VIÊN 4.")
+print("=" * 88)
