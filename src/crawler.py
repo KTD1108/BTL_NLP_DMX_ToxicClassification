@@ -23,41 +23,30 @@ DEFAULT_DMX_PRODUCT_URLS = [
 
 
 class WeakLabeler:
-    """Bộ gán nhãn hỗ trợ kết hợp từ điển và luật ngữ cảnh."""
+    """Bộ gán nhãn chuẩn hóa Toxic: Chỉ gán nhãn 1 cho phát ngôn thù địch, chửi bới, xúc phạm, vu khống lừa đảo.
+    Tuyệt đối không gán nhãn 1 cho các bình luận khiếu nại sản phẩm/dịch vụ thông thường ('quá tệ', 'không nên mua', 'rất kém')."""
 
     STRONG_TOXIC_PATTERNS = [
-        r"\b(đm|dm|đkm|dkm|vcl|vkl|vl|đéo|méo|như hạch|như cc|như cl|như lồn|như cặc)\b",
-        r"\b(bố láo|mất dạy|vô học|vô văn hóa|vô liêm sỉ|óc chó|óc lợn|ngu dốt|ngu ngốc)\b",
-        r"\b(lũ ăn hại|bọn ăn hại|đồ vô tích sự|khốn nạn|chó má|rác rưởi|khốn kiếp)\b",
-        r"\b(lũ lừa đảo|bọn lừa đảo|lừa đảo|lừa bịp|bịp bợm|ăn cướp|bọn cướp|móc túi|hút máu)\b",
-        r"\b(treo đầu dê|chém đẹp|ăn chặn|làm ăn bát nháo|thất đức|bố đời|hách dịch|mẹ thiên hạ)\b",
-        r"\b(khinh người|khinh khách|coi thường khách|khinh thường khách)\b",
-        r"\b(thằng lắp|thằng nv|thằng nhân viên|thằng thợ|thằng shipper|con nv|con nhân viên)\b",
+        # 1. Chửi thề, tục tĩu (kể cả viết tắt)
+        r"\b(đm|dm|đkm|dkm|vcl|vkl|vl|đéo|mịa|mịe|như hạch|như cc|như cl|như cặc|như lồn|cục cứt|như cứt|đĩ|cụ nội|bà già mày|mẹ mày|đậu má)\b",
+        # 2. Xúc phạm nhân phẩm, lăng mạ nhân viên / thợ kỹ thuật / cửa hàng
+        r"\b(bố láo|mất dạy|vô học|vô văn hóa|vô liêm sỉ|óc chó|óc lợn|ngu dốt|ngu như chó|ngu như bò|lũ ăn hại|bọn ăn hại|đồ ăn hại|đồ súc vật|đồ vô tích sự|chó chết|khốn nạn|chó má|rác rưởi|khốn kiếp|bố đời|mẹ thiên hạ|thất đức|láo toét|láo xược)\b",
+        # 3. Đại từ miệt thị nhân sự (thằng, con, lũ, bọn + nhân viên/thợ)
+        r"\b(thằng thợ|thằng nv|thằng nhân viên|thằng kỹ thuật|thằng giao|con nv|con nhân viên|bọn nhân viên|lũ nhân viên|bọn thợ|lũ thợ|con tổng đài|thằng quản lý)\b",
+        # 4. Tố cáo lừa đảo, trộm cắp, chiếm đoạt, lươn lẹo
+        r"\b(lừa đảo|lừa bịp|bịp bợm|ăn cướp|bọn cướp|lũ cướp|móc túi|hút máu|treo đầu dê|chém đẹp|ăn chặn|gian dối|lươn lẹo|quỵt tiền|bọn lừa|lũ lừa|lừa gạt|lừa lọc)\b",
+        # 5. Khinh miệt khách hàng nặng nề
+        r"\b(khinh người|khinh khách|coi thường khách|khinh thường khách|hách dịch|coi khách như rác|hành khách|hành hạ khách)\b",
+        # 6. Biến thể né kiểm duyệt
+        r"(l[\.\*\-_,\s]+ừ[\.\*\-_,\s]+a\s+đ[\.\*\-_,\s]+ả[\.\*\-_,\s]+o|m[\.\*\-_,\s]+ấ[\.\*\-_,\s]+t\s+d[\.\*\-_,\s]+ạ[\.\*\-_,\s]+y|b[\.\*\-_,\s]+ố\s+l[\.\*\-_,\s]+á[\.\*\-_,\s]+o|v[\.\*\-_,\s]+ô\s+h[\.\*\-_,\s]+ọ[\.\*\-_,\s]+c)",
     ]
 
-    HOSTILE_COMPLAINT_PATTERNS = [
-        r"(quá tệ|rất tệ|siêu tệ|cực kỳ tệ|vô cùng tệ|tệ hại|tệ nhất|tệ quá|quá kém|rất kém|cực kỳ kém)",
-        r"(quá thất vọng|rất thất vọng|thất vọng cùng cực|thất vọng tràn trề|kinh khủng|kinh hoàng)",
-        r"(bực cả mình|quá bực mình|bực mình|bực bội|ức chế|bức xúc|phí tiền|tiếc tiền|phí thời gian)",
-        r"(hối hận khi mua|hối hận vì mua|hối hận|không bao giờ mua|k bao giờ mua|ko bao giờ mua)",
-        r"(lần cuối cùng mua|lần đầu cũng như lần cuối|cạch mặt|tẩy chay|cút ngay|né gấp|né ra|tránh xa)",
-        r"(khuyên mọi người đừng|khuyên mn đừng|khuyên không nên|đừng ai mua|đừng dại mua|đừng bao giờ mua)",
-        r"(không nên mua|k nên mua|ko nên mua|chớ mua|đừng mua|làm ăn như trò hề|như trò đùa|chả ra gì|không ra gì)",
-        r"(đồ đểu|hàng đểu|dây đểu|rước bực|rước họa|bỏ con giữa chợ|đùn đẩy trách nhiệm|đùn đẩy)",
-        r"(vô trách nhiệm|thiếu trách nhiệm|chối bỏ trách nhiệm|chối quanh|hành khách|hành hạ khách)",
-        r"(cho leo cây|mất uy tín|đổ lỗi cho khách|đổ lỗi cho người dùng|đổ thừa|làm ăn rất tệ|làm ăn quá tệ)",
-    ]
-
-    NEGATION_PATTERN = r"\b(không hề|chẳng hề|ko hề|k hề|không phải|chả phải)\s+(lừa|bố láo|mất dạy|tệ|kém)"
+    NEGATION_PATTERN = r"\b(không hề|chẳng hề|ko hề|k hề|không phải|chả phải|tránh bị|sợ bị|không có chuyện)\s+(lừa|bố láo|mất dạy|ăn cướp)"
 
     def __init__(self):
         self.strong_patterns = [
             re.compile(pat, flags=re.IGNORECASE | re.UNICODE)
             for pat in self.STRONG_TOXIC_PATTERNS
-        ]
-        self.hostile_patterns = [
-            re.compile(pat, flags=re.IGNORECASE | re.UNICODE)
-            for pat in self.HOSTILE_COMPLAINT_PATTERNS
         ]
         self.negation_re = re.compile(self.NEGATION_PATTERN, flags=re.IGNORECASE | re.UNICODE)
 
@@ -69,10 +58,6 @@ class WeakLabeler:
         for pat in self.strong_patterns:
             if pat.search(text):
                 return 1
-        if rating is not None and rating <= 2:
-            for pat in self.hostile_patterns:
-                if pat.search(text):
-                    return 1
         return 0
 
 

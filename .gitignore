@@ -28,3 +28,14 @@ Thumbs.db
 *.jpeg
 
 report_assets/
+
+# Internal audit & utility scripts (scratch)
+enrich_*.py
+generate_diverse_*.py
+test_toxic_*.py
+relabel_and_*.py
+audit_*.py
+update_tab2_*.py
+audited_*.csv
+potential_*.csv
+
