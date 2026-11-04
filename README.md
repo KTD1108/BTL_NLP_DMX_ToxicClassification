@@ -28,13 +28,13 @@ btlvb1/
 │   │   └── dmx_reviews_raw.csv           # 15.183 đánh giá thô cào từ Điện Máy Xanh
 │   └── processed/
 │       ├── dmx_reviews_processed.csv     # Dữ liệu sau chuẩn hóa & gán nhãn
-│       ├── train.csv                     # Tập huấn luyện (10.628 mẫu - 70%)
-│       ├── val.csv                       # Tập kiểm định (2.277 mẫu - 15%)
+│       ├── train.csv                     # Tập huấn luyện (10.627 mẫu - 70%)
+│       ├── val.csv                       # Tập kiểm định (2.278 mẫu - 15%)
 │       └── test.csv                      # Tập kiểm thử độc lập (2.278 mẫu - 15%)
 ├── notebooks/
 │   └── Chu_De_2c_Toxic_DienMayXanh.ipynb # Jupyter Notebook toàn bộ pipeline đã thực thi
 ├── outputs/
-│   ├── error_analysis.csv                # Phân tích định tính 359 mẫu dự đoán sai
+│   ├── error_analysis.csv                # Phân tích định tính các mẫu dự đoán sai
 │   ├── results_summary.csv               # Bảng tổng hợp số liệu đo lường 5 mô hình
 │   ├── figures/                          # 5 biểu đồ trực quan hóa độ phân giải cao
 │   │   ├── 01_eda_distribution.png       # Phân bố sao & nhãn theo 6 ngành hàng
@@ -47,9 +47,6 @@ btlvb1/
 │       ├── tfidf_extractor.pkl
 │       ├── best_traditional_svm_tfidf.pkl
 │       └── phobert_contextual_transformer.pt
-├── report/
-│   ├── BAO_CAO_BTL1_CHU_DE_2C.md         # Báo cáo học thuật chi tiết định dạng Markdown
-│   └── BAO_CAO_BTL1_CHU_DE_2C.docx       # Báo cáo học thuật định dạng Microsoft Word
 ├── src/
 │   ├── __init__.py
 │   ├── crawler.py                        # Bộ cào dữ liệu tối ưu đa luồng từ API DMX
@@ -68,20 +65,20 @@ btlvb1/
 
 ## 📊 Kết quả thực nghiệm trên tập Test (2.278 mẫu)
 
-Tập Test độc lập gồm 2.087 mẫu Non-toxic (91,62%) và 191 mẫu Toxic (8,38%).
+Tập Test độc lập gồm 2.076 mẫu Non-toxic (91,13%) và 202 mẫu Toxic (8,87%).
 
 | STT | Phương pháp trích xuất | Mô hình | Accuracy | Precision (Toxic) | Recall (Toxic) | F1-Score (Toxic) | Macro-F1 | ROC-AUC | Thời gian |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | Bag of Words (BoW) | Multinomial NB | 89.86% | 43.67% | 72.25% | 54.44% | 74.37% | 89.42% | 0.13s |
-| 2 | Bag of Words (BoW) | SVM (LinearSVC) | 95.00% | 85.98% | 48.17% | 61.74% | 79.53% | 94.94% | 1.73s |
-| 3 | TF-IDF (Word + Char) | Multinomial NB | 90.65% | 46.10% | 68.06% | 54.97% | 74.88% | 92.57% | 0.33s |
-| **4** | **TF-IDF (Word + Char)** | **SVM (LinearSVC)** | **96.75%** | **85.89%** | **73.30%** | **79.10%** | **88.67%** | **98.37%** | **0.32s** |
-| **5** | **Contextual Subword** | **PhoBERT Transformer** | **89.29%** | **43.52%** | **93.19%** | **59.33%** | **76.58%** | **96.66%** | **113.25s** |
+| 1 | Bag of Words (BoW) | Multinomial NB | 95.13% | 66.91% | 89.11% | 76.43% | 86.86% | 97.10% | 0.11s |
+| 2 | Bag of Words (BoW) | SVM (LinearSVC) | 98.16% | 95.45% | 83.17% | 88.89% | 93.94% | 99.69% | 2.02s |
+| 3 | TF-IDF (Word + Char) | Multinomial NB | 94.42% | 63.44% | 87.62% | 73.60% | 85.24% | 97.65% | 0.53s |
+| **4** | **TF-IDF (Word + Char)** | **SVM (LinearSVC)** | **98.51%** | **96.15%** | **86.63%** | **91.15%** | **95.17%** | **99.76%** | **0.26s** |
+| **5** | **Contextual Subword** | **PhoBERT Transformer** | **95.08%** | **66.42%** | **90.10%** | **76.47%** | **86.86%** | **98.35%** | **168.12s** |
 
 ### Nhận xét & Đánh giá chuyên sâu:
-*   **Mô hình cân bằng và tối ưu vận hành thực tế**: **TF-IDF + LinearSVC** đạt hiệu năng vượt trội nhất với **Accuracy = 96,75%**, **F1-Score (Toxic) = 79,10%**, **Macro-F1 = 88,67%**, **ROC-AUC = 98,37%** cùng tốc độ suy luận cực nhanh (0,32 giây).
-*   **Mô hình cảnh báo sớm & an toàn tối đa**: **PhoBERT-style Transformer** đạt **Recall (Toxic) = 93,19%** (phát hiện được 178/191 bình luận công kích), cực kỳ phù hợp làm lớp màng lọc bảo vệ tự động để đẩy sang kiểm duyệt viên thủ công.
-*   **Tính toàn vẹn (Không rò rỉ dữ liệu - No Data Leakage)**: Việc chia tập `train/val/test` được thực hiện trước khi khớp vectorizer (`fit_transform` chỉ chạy trên tập Train). Tỉ lệ nhãn được giữ nguyên bằng Stratified Sampling.
+*   **Mô hình cân bằng và tối ưu vận hành thực tế**: **TF-IDF + LinearSVC** đạt hiệu năng vượt trội nhất với **Accuracy = 98,51%**, **Precision = 96,15%**, **F1-Score (Toxic) = 91,15%**, **Macro-F1 = 95,17%**, **ROC-AUC = 99,76%** cùng tốc độ suy luận cực nhanh (0,26 giây).
+*   **Mô hình cảnh báo sớm & an toàn tối đa**: **PhoBERT-style Transformer** đạt **Recall (Toxic) = 90,10%** (phát hiện được 182/202 bình luận độc hại), đóng vai trò quan trọng như một màng lọc quét sâu cho bài toán kiểm duyệt nội dung.
+*   **Tính toàn vẹn (Không rò rỉ dữ liệu - No Data Leakage)**: Việc chia tập `train/val/test` được thực hiện trước khi khớp vectorizer (`fit_transform` chỉ chạy trên tập Train). Tỉ lệ nhãn được phân tầng nghiêm ngặt (Stratified Sampling).
 
 ---
 
