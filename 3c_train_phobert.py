@@ -1,6 +1,6 @@
 """
 3c_train_phobert.py
-THÀNH VIÊN 3: MÔ HÌNH HÓA DEEP LEARNING HIỆN ĐẠI (PhoBERT Contextual Transformer)
+MÔ HÌNH HÓA DEEP LEARNING (PhoBERT Contextual Transformer)
 PHÁT HIỆN ĐÁNH GIÁ ĐỘC HẠI TRÊN DỮ LIỆU ĐIỆN MÁY XANH
 
 Mục tiêu kỹ thuật:
@@ -8,7 +8,7 @@ Mục tiêu kỹ thuật:
 2. Huấn luyện bộ phân loại phân tầng tối ưu trên tập Train (7.000 mẫu).
 3. Tối ưu ngưỡng quyết định threshold trên tập Validation (1.000 mẫu, 45 toxic).
 4. Đánh giá kiểm thử độc lập trên tập Test (2.000 mẫu, 75 toxic).
-5. Xuất file kết quả chuẩn quy ước nộp TV4:
+5. Xuất file kết quả chuẩn quy ước phục vụ đánh giá đối sánh:
    - results/predictions/phobert.csv
    - results/predictions/phobert_info.json
 """
@@ -49,7 +49,7 @@ torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 print("=" * 80, flush=True)
-print("THÀNH VIÊN 3: HUẤN LUYỆN MÔ HÌNH HIỆN ĐẠI PhoBERT (vinai/phobert-base-v2)", flush=True)
+print("HUẤN LUYỆN MÔ HÌNH PhoBERT (vinai/phobert-base-v2)", flush=True)
 print(f"Thư mục dữ liệu: {DATA_DIR.name}/", flush=True)
 print("=" * 80, flush=True)
 
@@ -217,7 +217,7 @@ print(f"Macro F1-Score   : {macro_f1:.4f}", flush=True)
 print(f"PR-AUC           : {pr_auc:.4f}", flush=True)
 print(f"Ma trận nhầm lẫn : TP = {tp}, FP = {fp}, FN = {fn}, TN = {tn}", flush=True)
 
-# 6. Xuất file kết quả nộp TV4
+# 6. Xuất file kết quả chuẩn quy ước
 pred_csv_path = PRED_DIR / "phobert.csv"
 info_json_path = PRED_DIR / "phobert_info.json"
 
@@ -241,7 +241,7 @@ pd.DataFrame({
 
 with open(info_json_path, "w", encoding="utf-8") as f:
     json.dump({
-        "nguoi_phu_trach": "TV3",
+        "mo_hinh": "PhoBERT Fine-Tuned",
         "threshold": float(best_th),
         "chon_nguong_tren": "tap_validation",
         "sieu_tham_so": {

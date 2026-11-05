@@ -109,7 +109,7 @@ python 3c_train_phobert.py
 python 4_model_evaluation.py
 ```
 
-Để huấn luyện lại PhoBERT trên GPU (ví dụ Google Colab GPU T4), có thể sử dụng notebook [`TV3_PhoBERT_FineTuning_Colab.ipynb`](./TV3_PhoBERT_FineTuning_Colab.ipynb).
+Để huấn luyện lại PhoBERT trên GPU (ví dụ Google Colab GPU T4), có thể sử dụng notebook [`PhoBERT_FineTuning_Colab.ipynb`](./PhoBERT_FineTuning_Colab.ipynb).
 
 ---
 
@@ -132,7 +132,7 @@ python 4_model_evaluation.py
 ├── 3b_train_svm.py                   # Huấn luyện Linear SVM
 ├── 3c_train_phobert.py               # Đánh giá PhoBERT
 ├── 4_model_evaluation.py             # Đánh giá đối sánh và kiểm định thống kê
-├── TV3_PhoBERT_FineTuning_Colab.ipynb# Notebook fine-tuning PhoBERT trên GPU
+├── PhoBERT_FineTuning_Colab.ipynb # Notebook fine-tuning PhoBERT trên GPU
 ├── nlp_utils.py                      # Module tiền xử lý văn bản tiếng Việt
 ├── requirements.txt                  # Danh sách thư viện phụ thuộc
 └── raw.zip                           # File nén chứa 71.934 bình luận gốc và danh mục 29 ngành hàng

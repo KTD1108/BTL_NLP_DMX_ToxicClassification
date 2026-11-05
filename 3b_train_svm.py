@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-BÀI TẬP LỚN 1 - XỬ LÝ NGÔN NGỮ TỰ NHIÊN (NLP)
-Thành viên 1: Kiều Tiến Đạt (B23DCKH020) - Data Architect & SVM Specialist
+DỰ ÁN PHÂN LOẠI BÌNH LUẬN ĐỘC HẠI - ĐIỆN MÁY XANH
+Mô hình hóa Machine Learning: Linear SVM (BoW vs TF-IDF đơn vs FeatureUnion 3 nhánh)
 Script: 3b_train_svm.py
 
 Mục tiêu kỹ thuật:
@@ -10,7 +10,7 @@ Mục tiêu kỹ thuật:
 3. Huấn luyện mô hình nâng cấp: FeatureUnion 3 nhánh (Word TF-IDF + Char_wb TF-IDF + Lexicon)
    kết hợp GridSearchCV (5-Folds) và tối ưu ngưỡng quyết định trên tập Train.
 4. Đánh giá đối sánh trên tập Test chuẩn vàng (data/test.csv - 2.000 mẫu).
-5. Xuất các file dự đoán chuẩn hóa nộp cho TV4 theo quy ước tại QUY_UOC_FILE_DU_DOAN.md.
+5. Xuất các file dự đoán chuẩn hóa phục vụ phân tích đối sánh.
 """
 
 import os
@@ -52,8 +52,8 @@ os.makedirs('models', exist_ok=True)
 os.makedirs('results', exist_ok=True)
 
 print("=" * 88)
-print("   THÀNH VIÊN 1: ĐỐI SÁNH MÔ HÌNH LINEAR SVM (BoW vs TF-IDF ĐƠN vs TF-IDF NÂNG CẤP)")
-print("                 & AUTO THRESHOLD TUNING TRÊN DỮ LIỆU MẤT CÂN BẰNG (1:49)")
+print("   ĐỐI SÁNH MÔ HÌNH LINEAR SVM (BoW vs TF-IDF ĐƠN vs TF-IDF NÂNG CẤP)")
+print("   & AUTO THRESHOLD TUNING TRÊN DỮ LIỆU MẤT CÂN BẰNG")
 print("=" * 88)
 
 # -----------------------------------------------------------------------------
@@ -352,9 +352,9 @@ df_save_metrics.to_csv(summary_path, index=False, encoding='utf-8-sig')
 print(f" -> Đã lưu bảng tổng kết metrics: {summary_path}")
 
 # -----------------------------------------------------------------------------
-# 10. XUẤT FILE DỰ ĐOÁN NỘP CHO THÀNH VIÊN 4 THEO QUY_UOC_FILE_DU_DOAN.md
+# 10. XUẤT FILE DỰ ĐOÁN CHUẨN HÓA (results/predictions/)
 # -----------------------------------------------------------------------------
-print("\n[BƯỚC 9] Xuất file dự đoán chuẩn hóa nộp TV4 (results/predictions/)...")
+print("\n[BƯỚC 9] Xuất file dự đoán chuẩn hóa (results/predictions/)...")
 pred_dir = os.path.join('results', 'predictions')
 os.makedirs(pred_dir, exist_ok=True)
 
@@ -370,7 +370,7 @@ pd.DataFrame({
 
 with open(os.path.join(pred_dir, 'svm_bow_info.json'), 'w', encoding='utf-8') as f:
     json.dump({
-        'nguoi_phu_trach': 'TV1',
+        'mo_hinh': 'Linear SVM (BoW)',
         'threshold': float(th_bow),
         'chon_nguong_tren': 'mac_dinh',
         'sieu_tham_so': {
@@ -395,7 +395,7 @@ pd.DataFrame({
 
 with open(os.path.join(pred_dir, 'svm_tfidf_info.json'), 'w', encoding='utf-8') as f:
     json.dump({
-        'nguoi_phu_trach': 'TV1',
+        'mo_hinh': 'Linear SVM (FeatureUnion 3 nhánh)',
         'threshold': float(th_tfidf),
         'chon_nguong_tren': 'mac_dinh',
         'sieu_tham_so': {
@@ -420,7 +420,7 @@ pd.DataFrame({
 
 with open(os.path.join(pred_dir, 'svm_tfidf_single_info.json'), 'w', encoding='utf-8') as f:
     json.dump({
-        'nguoi_phu_trach': 'TV1',
+        'mo_hinh': 'Linear SVM (TF-IDF đơn)',
         'threshold': float(th_single),
         'chon_nguong_tren': 'mac_dinh',
         'sieu_tham_so': {
@@ -435,5 +435,5 @@ with open(os.path.join(pred_dir, 'svm_tfidf_single_info.json'), 'w', encoding='u
 print(" -> Đã xuất: results/predictions/svm_tfidf_single.csv & svm_tfidf_single_info.json")
 
 print("\n" + "=" * 88)
-print("     HOÀN THÀNH HUẤN LUYỆN ĐỐI SÁNH VÀ XUẤT PREDICTIONS NỘP THÀNH VIÊN 4.")
+print("     HOÀN THÀNH HUẤN LUYỆN ĐỐI SÁNH VÀ XUẤT PREDICTIONS.")
 print("=" * 88)

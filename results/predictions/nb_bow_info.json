@@ -1,5 +1,4 @@
 {
-  "nguoi_phu_trach": "TV2",
   "threshold": 0.85,
   "chon_nguong_tren": "train_cv",
   "sieu_tham_so": {
@@ -11,5 +10,6 @@
     "min_df": 2
   },
   "random_seed": 42,
-  "ghi_chu": "BoW + MultinomialNB; ngưỡng và tham số chọn theo Macro F1 trên 5-fold CV của train"
+  "ghi_chu": "BoW + MultinomialNB; ngưỡng và tham số chọn theo Macro F1 trên 5-fold CV của train",
+  "mo_hinh": "Multinomial Naive Bayes (BoW)"
 }

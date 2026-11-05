@@ -1,5 +1,4 @@
 {
-  "nguoi_phu_trach": "TV3",
   "threshold": 0.28,
   "chon_nguong_tren": "tap_validation",
   "sieu_tham_so": {
@@ -21,5 +20,6 @@
     "fp": 27,
     "fn": 30,
     "tn": 1898
-  }
+  },
+  "mo_hinh": "PhoBERT Fine-Tuned (GPU T4)"
 }

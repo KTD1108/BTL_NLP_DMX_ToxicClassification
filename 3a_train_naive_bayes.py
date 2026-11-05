@@ -119,7 +119,7 @@ def save_submission(model_id, feat, test, prob, best):
         "pred": (prob >= t).astype(int),
     }).to_csv(PRED_DIR / f"{model_id}.csv", index=False, encoding="utf-8")
     info = {
-        "nguoi_phu_trach": "TV2",
+        "mo_hinh": "Multinomial Naive Bayes",
         "threshold": t,
         "chon_nguong_tren": "train_cv",
         "sieu_tham_so": {"alpha": best["alpha"], "ngram_range": list(best["ngram"]),

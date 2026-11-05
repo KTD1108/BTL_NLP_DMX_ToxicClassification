@@ -1,5 +1,4 @@
 {
-  "nguoi_phu_trach": "TV1",
   "threshold": 0.0,
   "chon_nguong_tren": "mac_dinh",
   "sieu_tham_so": {
@@ -11,5 +10,6 @@
     "class_weight": "balanced"
   },
   "random_seed": 42,
-  "ghi_chu": "Mô hình cơ sở BoW (CountVectorizer) + Linear SVM (class_weight=balanced)"
+  "ghi_chu": "Mô hình cơ sở BoW (CountVectorizer) + Linear SVM (class_weight=balanced)",
+  "mo_hinh": "Linear SVM (BoW)"
 }

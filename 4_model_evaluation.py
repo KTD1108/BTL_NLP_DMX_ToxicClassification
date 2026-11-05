@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-THÀNH VIÊN 4: EVALUATION LEAD & REPORT AUTHOR
+HỆ THỐNG ĐÁNH GIÁ ĐỐI SÁNH HIỆU NĂNG MÔ HÌNH (MODEL EVALUATION PIPELINE)
 Script: 4_model_evaluation.py
 
 Nhiệm vụ:
-1. Đọc các file dự đoán chuẩn hóa và file thông tin `_info.json` đi kèm trong `results/predictions/`
-   (quy ước tại QUY_UOC_FILE_DU_DOAN.md), kiểm tra tính hợp lệ so với tập Test chuẩn vàng `data/test.csv` (2.000 mẫu).
+1. Đọc các file dự đoán chuẩn hóa và file thông tin `_info.json` đi kèm trong `results/predictions/`,
+   kiểm tra tính hợp lệ so với tập Test chuẩn vàng `data/test.csv` (2.000 mẫu).
 2. Tính lại 6 chỉ số cho mọi mô hình bằng cùng một đoạn code:
    Accuracy, Precision (Toxic), Recall (Toxic), F1 (Toxic), Macro F1, PR-AUC.
 3. Xuất kết quả (300 DPI):
@@ -49,7 +49,7 @@ plt.rcParams['axes.unicode_minus'] = False
 DATA_DIR = os.environ.get('DATA_DIR', 'data')
 TEST_PATH = os.path.join(DATA_DIR, 'test.csv')
 REQUIRED_COLS = ['review_id', 'label', 'score', 'pred']
-REQUIRED_INFO_KEYS = ['nguoi_phu_trach', 'threshold', 'chon_nguong_tren', 'sieu_tham_so', 'random_seed']
+REQUIRED_INFO_KEYS = ['mo_hinh', 'threshold', 'chon_nguong_tren', 'sieu_tham_so', 'random_seed']
 THRESHOLD_SOURCES = ['val', 'train_cv', 'mac_dinh', 'tap_validation']
 
 # Thứ tự khai báo = thứ tự hiển thị trong bảng và biểu đồ
@@ -303,7 +303,7 @@ def main():
         sys.exit(run_check(args.check, test_df))
 
     print("=" * 85)
-    print("     THÀNH VIÊN 4: ĐÁNH GIÁ ĐỐI SÁNH CÁC MÔ HÌNH TRÊN TẬP TEST (2.000 MẪU)")
+    print("     ĐÁNH GIÁ ĐỐI SÁNH CÁC MÔ HÌNH TRÊN TẬP TEST (2.000 MẪU)")
     print("=" * 85)
 
     # --- Nạp và kiểm tra các file dự đoán ---
@@ -313,7 +313,7 @@ def main():
                               if os.path.splitext(os.path.basename(p))[0] in known else len(known),
                               os.path.basename(p)))
     if not paths:
-        print(f"Không tìm thấy file dự đoán nào trong `{args.pred_dir}`. Xem QUY_UOC_FILE_DU_DOAN.md.")
+        print(f"Không tìm thấy file dự đoán nào trong `{args.pred_dir}`.")
         sys.exit(1)
 
     print(f"\n[BƯỚC 1] Kiểm tra {len(paths)} file dự đoán trong `{args.pred_dir}`...")
@@ -343,7 +343,7 @@ def main():
         m = compute_metrics(df['label'], df['pred'], df['score'])
         m['Mã mô hình'] = model_id
         m['Mô hình'] = MODEL_NAMES.get(model_id, model_id)
-        m['Người phụ trách'] = infos[model_id]['nguoi_phu_trach']
+        m['Nhóm mô hình'] = infos[model_id].get('mo_hinh', infos[model_id].get('nguoi_phu_trach', 'NLP Model'))
         m['Ngưỡng'] = infos[model_id]['threshold']
         m['Chọn ngưỡng trên'] = infos[model_id]['chon_nguong_tren']
         m['Siêu tham số'] = json.dumps(infos[model_id]['sieu_tham_so'], ensure_ascii=False)
@@ -352,7 +352,7 @@ def main():
 
     metric_cols = ['Accuracy', 'Precision (Toxic)', 'Recall (Toxic)',
                    'F1 (Toxic)', 'Macro F1', 'PR-AUC', 'TP', 'FP', 'FN', 'TN']
-    config_cols = ['Người phụ trách', 'Ngưỡng', 'Chọn ngưỡng trên', 'Siêu tham số', 'Random seed']
+    config_cols = ['Nhóm mô hình', 'Ngưỡng', 'Chọn ngưỡng trên', 'Siêu tham số', 'Random seed']
     df_metrics = pd.DataFrame(results)[['Mã mô hình', 'Mô hình'] + metric_cols + config_cols]
     print("\n" + df_metrics[['Mô hình'] + metric_cols].to_string(index=False, float_format=lambda v: f"{v:.4f}"))
     print("\nCấu hình từng mô hình:")

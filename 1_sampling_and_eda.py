@@ -123,32 +123,14 @@ def split_and_prepare_test_set(df_10k: pd.DataFrame):
     print(f"Đã lưu tập Train: {train_path} ({len(df_train):,} mẫu)")
     print(f"Đã lưu tập Val:   {val_path} ({len(df_val):,} mẫu)")
 
-    # Định dạng tập Test 2.000 mẫu để gán nhãn thủ công
+    # Định dạng tập Test 2.000 mẫu để kiểm toán chất lượng thủ công
     df_test = df_test.reset_index(drop=True)
     df_test['stt'] = range(1, len(df_test) + 1)
-
-    def assign_section(idx):
-        if idx <= 400:
-            return "Gan_cheo_TV1_va_TV2 (400 mau do Cohen Kappa)"
-        elif idx <= 800:
-            return "TV1_gan_rieng (400 mau)"
-        elif idx <= 1200:
-            return "TV2_gan_rieng (400 mau)"
-        elif idx <= 1600:
-            return "TV3_gan_rieng (400 mau)"
-        else:
-            return "TV4_gan_rieng (400 mau)"
-
-    df_test['phan_vung_nhiem_vu'] = [assign_section(i) for i in df_test['stt']]
-    df_test['nhan_TV1'] = ""
-    df_test['nhan_TV2'] = ""
-    df_test['nhan_TV3'] = ""
-    df_test['nhan_TV4'] = ""
+    df_test['nhan_kiem_toan'] = ""
 
     export_cols = [
         'stt', 'review_id', 'ten_san_pham', 'nganh', 'so_sao',
-        'noi_dung', 'phan_vung_nhiem_vu',
-        'nhan_TV1', 'nhan_TV2', 'nhan_TV3', 'nhan_TV4'
+        'noi_dung', 'nhan_kiem_toan'
     ]
     df_test_export = df_test[export_cols]
 
