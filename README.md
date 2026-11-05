@@ -35,9 +35,9 @@ Từ dữ liệu gốc trong `raw.zip`, dữ liệu được xử lý qua quy tr
 
 | Tập dữ liệu | Đường dẫn file | Số lượng mẫu | Non-toxic (0) | Toxic (1) | Tỷ lệ Toxic | Mục đích sử dụng |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Train** | [`data/train.csv`](./data/train.csv) | **7.000** | 6.713 | 287 | 4.10% | Huấn luyện mô hình |
-| **Validation** | [`data/val.csv`](./data/val.csv) | **1.000** | 952 | 48 | 4.80% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
-| **Test** | [`data/test.csv`](./data/test.csv) | **2.000** | 1.912 | 88 | 4.40% | Đánh giá kiểm thử độc lập |
+| **Train** | [`data/train.csv`](./data/train.csv) | **7.011** | 6.710 | 301 | 4.29% | Huấn luyện mô hình |
+| **Validation** | [`data/val.csv`](./data/val.csv) | **997** | 952 | 45 | 4.51% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
+| **Test** | [`data/test.csv`](./data/test.csv) | **1.992** | 1.912 | 80 | 4.02% | Đánh giá kiểm thử độc lập |
 
 *Cấu trúc các cột chuẩn hóa:* `review_id`, `product_id`, `nganh_hang`, `so_sao`, `noi_dung_goc`, `noi_dung_tien_xu_ly`, `nguon_nhan`, `label`.
 
@@ -63,8 +63,9 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
 3. **Nhóm mô hình ngữ cảnh Transformer (PhoBERT):**
    * Kiến trúc nền tảng: `vinai/phobert-base-v2` (135 triệu tham số).
-   * Tinh chỉnh toàn phần (End-to-End Fine-Tuning) với hàm mất mát Cross-Entropy có trọng số phạt lớp thiểu số (`weight=[1.0, 8.0]`).
-   * Sử dụng thuật toán tối ưu AdamW, learning rate 2e-5 và bộ lập lịch warmup tuyến tính.
+   * Tinh chỉnh toàn phần (End-to-End Fine-Tuning) với hàm mất mát Weighted Cross-Entropy có trọng số phạt thích ứng với độ mất cân bằng lớp (`weight=[1.0, 10.0]`).
+   * Sử dụng thuật toán tối ưu AdamW (learning rate $2 \times 10^{-5}$, weight decay 0.01) kết hợp bộ lập lịch warmup tuyến tính và cơ chế Early Stopping (patience = 2).
+   * Chạy huấn luyện đa seed (seeds: 42, 13, 7) để đảm bảo tính khách quan và chọn mô hình có PR-AUC trên validation cao nhất.
 
 ---
 
@@ -118,16 +119,17 @@ python 4_model_evaluation.py
 
 ```text
 ├── data/                             # Dữ liệu phân tầng (Train, Val, Test)
-│   ├── train.csv                     # 7.000 mẫu huấn luyện
-│   ├── val.csv                       # 1.000 mẫu validation
-│   ├── test.csv                      # 2.000 mẫu kiểm thử chuẩn vàng
+│   ├── train.csv                     # 7.011 mẫu huấn luyện
+│   ├── val.csv                       # 997 mẫu validation
+│   ├── test.csv                      # 1.992 mẫu kiểm thử chuẩn vàng
 │   └── dmx_reviews_10k_raw.csv       # 10.000 mẫu gốc
 ├── results/                          # Kết quả đầu ra
-│   ├── predictions/                  # Dự đoán chi tiết của từng mô hình (.csv & _info.json)
+│   ├── predictions/                  # 6 file dự đoán chuẩn hóa (.csv & _info.json)
+│   ├── phobert_v2/                   # Chi tiết đường học, metrics từng seed, báo cáo PhoBERT
 │   ├── 5_confusion_matrices.png      # Ma trận nhầm lẫn của 6 mô hình
-│   ├── 6_model_comparison.png        # Biểu đồ so sánh Macro F1 & Recall
-│   ├── tv4_model_comparison.csv      # Bảng số liệu tổng hợp
-│   └── tv4_error_cases.csv           # 141 ca phân loại sai để phân tích lỗi
+│   ├── 6_model_comparison.png        # Biểu đồ so sánh Macro F1 & Recall 6 mô hình
+│   ├── tv4_model_comparison.csv      # Bảng số liệu tổng hợp đối sánh 6 mô hình
+│   └── tv4_error_cases.csv           # 169 ca phân loại sai để phân tích lỗi
 ├── 1_sampling_and_eda.py             # Script khám phá dữ liệu (EDA)
 ├── 3a_train_naive_bayes.py           # Huấn luyện Naive Bayes
 ├── 3b_train_svm.py                   # Huấn luyện Linear SVM
