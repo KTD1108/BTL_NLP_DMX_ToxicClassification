@@ -1,0 +1,4 @@
+﻿,Ngưỡng (chọn trên val),Epoch tốt nhất,Số epoch đã chạy,Thời gian train (phút),VRAM đỉnh khi train (GB)
+seed 42,0.0256,3,5,5.2441,3.8264
+seed 13,0.006,5,5,4.8799,4.8453
+seed 7,0.9969,4,5,4.8746,4.857

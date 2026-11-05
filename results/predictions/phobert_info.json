@@ -1,25 +1,36 @@
 {
-  "threshold": 0.28,
-  "chon_nguong_tren": "tap_validation",
+  "nguoi_phu_trach": "TV3",
+  "threshold": 0.0060386634431779385,
+  "chon_nguong_tren": "val",
   "sieu_tham_so": {
     "backbone": "vinai/phobert-base-v2",
-    "training_mode": "End-to-End Fine-Tuning (3 epochs, lr=2e-5, AdamW, GPU T4)",
-    "loss": "CrossEntropyLoss(weights=[1.0, 8.0])",
-    "max_len": 64,
-    "batch_size": 32
+    "training_mode": "End-to-End Fine-Tuning (AdamW, CUDA)",
+    "epochs_toi_da": 5,
+    "epoch_tot_nhat": 5,
+    "early_stopping_patience": 2,
+    "lr": 2e-05,
+    "warmup": 0.1,
+    "batch_size": 16,
+    "max_len": 256,
+    "loss": "CrossEntropyLoss(weights=[1.0, 10.0])",
+    "input_mode": "pyvi",
+    "normalize_teencode": true
   },
-  "random_seed": 42,
+  "random_seed": 13,
+  "ghi_chu": "Fine-tune PhoBERT với các seed [42, 13, 7]; nộp seed 13 (PR-AUC val cao nhất). Test trung bình qua các seed: F1 toxic 0.7316 ± 0.0436, PR-AUC 0.7738 ± 0.0295.",
   "metrics_test": {
-    "accuracy": 0.9715,
-    "precision_toxic": 0.625,
-    "recall_toxic": 0.6,
-    "f1_toxic": 0.6122448979591837,
-    "macro_f1": 0.7987256153434641,
-    "pr_auc": 0.6434143970071792,
-    "tp": 45,
-    "fp": 27,
-    "fn": 30,
-    "tn": 1898
+    "accuracy": 0.9829317269076305,
+    "precision_toxic": 0.7804878048780488,
+    "recall_toxic": 0.8,
+    "f1_toxic": 0.7901234567901234,
+    "f1_macro": 0.8906137953757001,
+    "pr_auc": 0.7580213217948435,
+    "roc_auc": 0.9399156642259414,
+    "cohen_kappa": 0.7812290040828983,
+    "tp": 64,
+    "fp": 18,
+    "fn": 16,
+    "tn": 1894
   },
-  "mo_hinh": "PhoBERT Fine-Tuned (GPU T4)"
+  "mo_hinh": "PhoBERT (vinai/phobert-base-v2)"
 }

@@ -70,23 +70,21 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
 ## 4. Kết quả thực nghiệm
 
-> **Lưu ý:** Bảng dưới đây được tính trên phiên bản nhãn trước (test 75 mẫu Toxic) và sẽ được cập nhật sau khi các mô hình chạy lại trên nhãn hiện tại (test 88 mẫu Toxic).
+Kết quả đánh giá độc lập trên tập Test (1.992 mẫu, 80 mẫu Toxic):
 
-Kết quả đánh giá độc lập trên tập Test (2.000 mẫu, 75 mẫu Toxic):
-
-| STT | Mô hình | Accuracy | Precision (Toxic) | Recall (Toxic) | F1 (Toxic) | Macro F1 | PR-AUC | TP | FP |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | **Linear SVM (Word TF-IDF + Char n-gram + Lexicon)** | **97.65%** | **75.00%** | 56.00% | **0.6412** | **0.8145** | **0.7197** | 42 | 14 |
-| 2 | **PhoBERT (Fine-Tuned GPU T4)** | 97.15% | 62.50% | **60.00%** | 0.6122 | 0.7987 | 0.6357 | **45** | 27 |
-| 3 | **Naive Bayes (TF-IDF)** | 95.95% | 46.81% | 58.67% | 0.5207 | 0.7498 | 0.5669 | 44 | 50 |
-| 4 | Linear SVM (TF-IDF đơn) | 96.85% | 62.50% | 40.00% | 0.4878 | 0.7358 | 0.5232 | 30 | 18 |
-| 5 | Naive Bayes (BoW) | 95.45% | 41.49% | 52.00% | 0.4615 | 0.7189 | 0.4252 | 39 | 55 |
-| 6 | Linear SVM (BoW) | 96.90% | 66.67% | 34.67% | 0.4561 | 0.7201 | 0.4489 | 26 | 13 |
+| STT | Mô hình | Accuracy | Precision (Toxic) | Recall (Toxic) | F1 (Toxic) | Macro F1 | PR-AUC | TP | FP | FN |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 1 | **PhoBERT (`vinai/phobert-base-v2`)** | **98.29%** | **78.05%** | **80.00%** | **0.7901** | **0.8906** | **0.7580** | **64** | 18 | **16** |
+| 2 | Linear SVM (TF-IDF đa nhánh) | 97.14% | 70.91% | 48.75% | 0.5778 | 0.7815 | 0.6495 | 39 | **16** | 41 |
+| 3 | Linear SVM (TF-IDF đơn) | 96.69% | 60.61% | 50.00% | 0.5479 | 0.7654 | 0.5574 | 40 | 26 | 40 |
+| 4 | Naive Bayes (TF-IDF) | 94.33% | 37.01% | 58.75% | 0.4541 | 0.7121 | 0.4530 | 47 | 80 | 33 |
+| 5 | Linear SVM (BoW) | 96.23% | 54.55% | 37.50% | 0.4444 | 0.7125 | 0.4810 | 30 | 25 | 50 |
+| 6 | Naive Bayes (BoW) | 94.53% | 37.17% | 52.50% | 0.4352 | 0.7032 | 0.3541 | 42 | 71 | 38 |
 
 ### Nhận xét kỹ thuật:
-* **Linear SVM đa nhánh đặc trưng** đạt Precision cao nhất (75.00%) và F1 cao nhất (0.6412), số ca báo nhầm thấp nhất (chỉ 14 ca FP trên 1.925 câu không độc hại). Mô hình phù hợp làm bộ lọc tự động kiểm duyệt trực tiếp.
-* **PhoBERT Fine-Tuned** đạt Recall cao nhất (60.00%, bắt đúng 45/75 ca vi phạm), có khả năng hiểu ngữ cảnh câu dài và sắc thái ẩn ý. Phù hợp cho bài toán cảnh báo sơ loại kiểm duyệt.
-* Kiểm định thống kê McNemar giữa Linear SVM và PhoBERT cho kết quả $p = 0.194 > 0.05$, cho thấy hiệu năng tổng thể của hai mô hình có sự tương đương về mặt thống kê và mang tính bổ trợ lẫn nhau.
+* **PhoBERT (`vinai/phobert-base-v2`)** đạt hiệu năng dẫn đầu tuyệt đối ở mọi chỉ số: Accuracy (98.29%), Precision (78.05%), Recall (80.00%), F1 Toxic (0.7901) và Macro F1 (0.8906). Nhờ kiến trúc Transformer tiền huấn luyện chuyên biệt cho tiếng Việt, PhoBERT hiểu sâu ngữ cảnh câu dài, từ lóng và sắc thái chê bai gián tiếp, bắt đúng 64/80 ca vi phạm và chỉ bỏ sót 16 ca.
+* **Linear SVM đa nhánh đặc trưng (FeatureUnion)** là mô hình truyền thống tốt nhất với Precision đạt 70.91%, số ca báo nhầm thấp nhất (chỉ 16 ca FP trên 1.912 câu sạch). Đây là lựa chọn tối ưu về mặt chi phí tính toán khi cần triển khai nhẹ trên CPU.
+* **Naive Bayes** có ưu thế tốc độ huấn luyện và suy luận cực nhanh, đạt Recall tương đối tốt (~58.75%) khi tinh chỉnh ngưỡng trên tập validation, nhưng tỷ lệ báo nhầm (FP) còn cao hơn so với SVM và PhoBERT.
 
 ---
 
@@ -108,14 +106,11 @@ python 3a_train_naive_bayes.py
 # 2. Huấn luyện và đánh giá mô hình Linear SVM
 python 3b_train_svm.py
 
-# 3. Đánh giá mô hình PhoBERT
-python 3c_train_phobert.py
-
-# 4. Đánh giá đối sánh toàn bộ mô hình và vẽ biểu đồ
+# 3. Đánh giá đối sánh toàn bộ mô hình và vẽ biểu đồ
 python 4_model_evaluation.py
 ```
 
-Để huấn luyện lại PhoBERT trên GPU (ví dụ Google Colab GPU T4), có thể sử dụng notebook [`PhoBERT_FineTuning_Colab.ipynb`](./PhoBERT_FineTuning_Colab.ipynb).
+Để huấn luyện và tinh chỉnh mô hình **PhoBERT** trên GPU (Google Colab hoặc Kaggle GPU T4), sử dụng notebook chuẩn của dự án: [`btl-nlpv2.ipynb`](./btl-nlpv2.ipynb). Notebook sẽ tự động lưu kết quả dự đoán đạt chuẩn vào `results/predictions/phobert.csv` và `phobert_info.json`.
 
 ---
 
@@ -136,9 +131,8 @@ python 4_model_evaluation.py
 ├── 1_sampling_and_eda.py             # Script khám phá dữ liệu (EDA)
 ├── 3a_train_naive_bayes.py           # Huấn luyện Naive Bayes
 ├── 3b_train_svm.py                   # Huấn luyện Linear SVM
-├── 3c_train_phobert.py               # Đánh giá PhoBERT
 ├── 4_model_evaluation.py             # Đánh giá đối sánh và kiểm định thống kê
-├── PhoBERT_FineTuning_Colab.ipynb # Notebook fine-tuning PhoBERT trên GPU
+├── btl-nlpv2.ipynb                   # Notebook huấn luyện và đánh giá PhoBERT (Colab/Kaggle/Local)
 ├── LUAT_GAN_NHAN.md                  # Luật gán nhãn và độ tin cậy nhãn
 ├── nlp_utils.py                      # Module tiền xử lý văn bản tiếng Việt
 ├── requirements.txt                  # Danh sách thư viện phụ thuộc
