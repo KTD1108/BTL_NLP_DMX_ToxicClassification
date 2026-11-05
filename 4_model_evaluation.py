@@ -58,7 +58,7 @@ MODEL_NAMES = {
     'nb_tfidf': 'TF-IDF + Naive Bayes',
     'svm_bow': 'BoW + Linear SVM',
     'svm_tfidf_single': 'TF-IDF đơn + Linear SVM',
-    'svm_tfidf': 'TF-IDF + Linear SVM',
+    'svm_tfidf': 'FeatureUnion + Linear SVM',
     'phobert': 'PhoBERT (vinai/phobert-base-v2)',
 }
 
@@ -244,7 +244,7 @@ def plot_confusion_matrices(results, out_path):
     for ax in list(axes.flat)[n:]:
         ax.axis('off')
 
-    fig.suptitle('Ma trận nhầm lẫn trên tập Test (2.000 mẫu)', fontsize=14, fontweight='bold')
+    fig.suptitle('Ma trận nhầm lẫn trên tập Test (1.992 mẫu)', fontsize=14, fontweight='bold')
     fig.tight_layout()
     fig.savefig(out_path, dpi=300, bbox_inches='tight')
     plt.close(fig)
