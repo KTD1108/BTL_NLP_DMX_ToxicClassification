@@ -1,4 +1,5 @@
 {
+  "mo_hinh": "Multinomial Naive Bayes",
   "threshold": 0.15,
   "chon_nguong_tren": "train_cv",
   "sieu_tham_so": {
@@ -7,9 +8,8 @@
       1,
       1
     ],
-    "min_df": 2
+    "min_df": 1
   },
   "random_seed": 42,
-  "ghi_chu": "TF-IDF + MultinomialNB; ngưỡng và tham số chọn theo Macro F1 trên 5-fold CV của train; sublinear_tf",
-  "mo_hinh": "Multinomial Naive Bayes (TF-IDF)"
+  "ghi_chu": "TF-IDF + MultinomialNB; ngưỡng và tham số chọn theo Macro F1 trên 5-fold CV của train; sublinear_tf"
 }
