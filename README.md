@@ -8,11 +8,13 @@ Dự án nghiên cứu và xây dựng hệ thống phân loại bình luận đ
 ## 1. Định nghĩa bài toán
 
 ### Định nghĩa nhãn phân loại
-* **Nhãn 0 (Non-toxic):** Bình luận trung tính, khen ngợi, hỏi đáp hoặc phản ánh khiếu nại về chất lượng sản phẩm/dịch vụ (*"máy giặt kêu to"*, *"giao hàng chậm"*, *"nấu cơm bị khét"*, *"hẹn bảo hành lâu"*).
-* **Nhãn 1 (Toxic):** Bình luận chứa ngôn từ thô tục, chửi thề, lăng mạ nhân viên hoặc quy chụp gian dối, vu khống lừa đảo (*"lừa đảo"*, *"lũ ăn cướp"*, *"đồ đểu"*, *"mất dạy"*, *"vcl"*).
+* **Nhãn 0 (Non-toxic):** Bình luận khen ngợi, hỏi đáp, hoặc chê, báo lỗi, phàn nàn bằng giọng kể sự việc (*"máy giặt kêu to"*, *"giao hàng chậm, rất thất vọng"*, *"hẹn bảo hành lâu"*); câu chỉ nghi ngờ, chưa khẳng định bị lừa.
+* **Nhãn 1 (Toxic):** Bình luận chửi thề, thô tục, xúc phạm; cáo buộc gian dối, lừa đảo; miệt thị, hạ thấp; kêu gọi người khác né hoặc tẩy chay cửa hàng/thương hiệu; hoặc thể hiện thái độ thù địch rõ rệt (*"lừa đảo"*, *"mất dạy"*, *"vcl"*, *"mọi người né ra nha"*, *"thợ ăn gian ống đồng"*, *"làm ăn tệ bạc"*).
+
+Luật chi tiết, ví dụ ranh giới và số liệu độ tin cậy nhãn: [`LUAT_GAN_NHAN.md`](./LUAT_GAN_NHAN.md).
 
 ### Thách thức chính
-* **Mất cân bằng dữ liệu tự nhiên:** Tỷ lệ bình luận độc hại thực tế trên sàn chỉ chiếm khoảng **3.4% – 3.7%**.
+* **Mất cân bằng dữ liệu:** Ước tính trên toàn bộ `raw.zip`, bình luận độc hại chỉ chiếm khoảng **1%**; bộ dữ liệu được lấy dư mẫu độc hại thật lên khoảng **4%** để đánh giá ổn định.
 * **Đặc thù ngôn ngữ mạng:** Người dùng thường xuyên sử dụng từ lóng, teencode, viết tắt, biến âm để lách bộ lọc từ khóa (*"đm"*, *"vcl"*, *"bịp"*...).
 * **Sắc thái cảm xúc tiêu cực:** Rất dễ nhầm lẫn giữa khách hàng bức xúc vì lỗi thiết bị với hành vi công kích, xúc phạm độc hại.
 
@@ -33,11 +35,13 @@ Từ dữ liệu gốc trong `raw.zip`, dữ liệu được xử lý qua quy tr
 
 | Tập dữ liệu | Đường dẫn file | Số lượng mẫu | Non-toxic (0) | Toxic (1) | Tỷ lệ Toxic | Mục đích sử dụng |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Train** | [`data/train.csv`](./data/train.csv) | **7.000** | 6.760 | 240 | 3.43% | Huấn luyện mô hình |
-| **Validation** | [`data/val.csv`](./data/val.csv) | **1.000** | 955 | 45 | 4.50% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
-| **Test (Gold)** | [`data/test.csv`](./data/test.csv) | **2.000** | 1.925 | 75 | 3.75% | Đánh giá kiểm thử độc lập |
+| **Train** | [`data/train.csv`](./data/train.csv) | **7.000** | 6.713 | 287 | 4.10% | Huấn luyện mô hình |
+| **Validation** | [`data/val.csv`](./data/val.csv) | **1.000** | 952 | 48 | 4.80% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
+| **Test** | [`data/test.csv`](./data/test.csv) | **2.000** | 1.912 | 88 | 4.40% | Đánh giá kiểm thử độc lập |
 
 *Cấu trúc các cột chuẩn hóa:* `review_id`, `product_id`, `nganh_hang`, `so_sao`, `noi_dung_goc`, `noi_dung_tien_xu_ly`, `nguon_nhan`, `label`.
+
+*Gán nhãn:* Gemini gán theo [`LUAT_GAN_NHAN.md`](./LUAT_GAN_NHAN.md) cho toàn bộ câu 1–3 sao, người rà soát chốt mọi câu đổi nhãn; câu 4–5 sao mặc định non-toxic.
 
 ---
 
@@ -66,7 +70,9 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
 ## 4. Kết quả thực nghiệm
 
-Kết quả đánh giá độc lập trên tập Test (2.000 mẫu, 75 mẫu Toxic thật):
+> **Lưu ý:** Bảng dưới đây được tính trên phiên bản nhãn trước (test 75 mẫu Toxic) và sẽ được cập nhật sau khi các mô hình chạy lại trên nhãn hiện tại (test 88 mẫu Toxic).
+
+Kết quả đánh giá độc lập trên tập Test (2.000 mẫu, 75 mẫu Toxic):
 
 | STT | Mô hình | Accuracy | Precision (Toxic) | Recall (Toxic) | F1 (Toxic) | Macro F1 | PR-AUC | TP | FP |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -133,6 +139,7 @@ python 4_model_evaluation.py
 ├── 3c_train_phobert.py               # Đánh giá PhoBERT
 ├── 4_model_evaluation.py             # Đánh giá đối sánh và kiểm định thống kê
 ├── PhoBERT_FineTuning_Colab.ipynb # Notebook fine-tuning PhoBERT trên GPU
+├── LUAT_GAN_NHAN.md                  # Luật gán nhãn và độ tin cậy nhãn
 ├── nlp_utils.py                      # Module tiền xử lý văn bản tiếng Việt
 ├── requirements.txt                  # Danh sách thư viện phụ thuộc
 └── raw.zip                           # File nén chứa 71.934 bình luận gốc và danh mục 29 ngành hàng
