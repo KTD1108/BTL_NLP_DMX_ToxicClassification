@@ -2,14 +2,16 @@
 
 Đầu vào: data/train.csv, data/val.csv, data/test.csv (cột noi_dung_tien_xu_ly, label).
 Quy trình (cho mỗi loại đặc trưng):
-  1. Dò alpha x ngram_range x min_df bằng 5-fold CV trên train (vectorizer fit trong từng fold).
-  2. Với mỗi cấu hình, chọn ngưỡng xác suất cho Macro F1 cao nhất trên dự đoán CV.
-  3. Fit lại cấu hình tốt nhất trên toàn bộ train, báo cáo trên val, dự đoán test đúng một lần.
+  1. Dò alpha x ngram_range x min_df bằng 5-fold CV trên train (vectorizer fit trong từng fold),
+     xếp hạng cấu hình theo Macro F1 tốt nhất trên dự đoán CV.
+  2. Fit lại cấu hình tốt nhất trên toàn bộ train, chọn ngưỡng xác suất cho Macro F1 cao nhất trên val
+     (val có thành phần toxic giống test hơn train).
+  3. Dự đoán test đúng một lần với ngưỡng đã chọn.
 Đầu ra:
   results/predictions/nb_bow.csv, nb_tfidf.csv (+ _info.json)  theo QUY_UOC_FILE_DU_DOAN.md
   results/nb_cv_tuning.csv       kết quả dò tham số trên CV
   results/nb_metrics.csv         chỉ số của cấu hình tốt nhất trên CV / val / test
-  results/nb_threshold_curve.png F1 theo ngưỡng trên CV
+  results/nb_threshold_curve.png Macro F1 theo ngưỡng trên val
   results/nb_confusion_matrices.png, results/nb_top_features.png
 """
 import json
@@ -111,7 +113,7 @@ def tune(feat, train):
 
 def save_submission(model_id, feat, test, prob, best):
     PRED_DIR.mkdir(parents=True, exist_ok=True)
-    t = best["best_threshold"]
+    t = best["threshold"]
     pd.DataFrame({
         "review_id": test["review_id"],
         "label": test[LABEL],
@@ -121,12 +123,12 @@ def save_submission(model_id, feat, test, prob, best):
     info = {
         "mo_hinh": "Multinomial Naive Bayes",
         "threshold": t,
-        "chon_nguong_tren": "train_cv",
+        "chon_nguong_tren": "val",
         "sieu_tham_so": {"alpha": best["alpha"], "ngram_range": list(best["ngram"]),
                          "min_df": best["min_df"]},
         "random_seed": SEED,
-        "ghi_chu": (f"{FEATURES[feat]['name']} + MultinomialNB; ngưỡng và tham số chọn theo "
-                    "Macro F1 trên 5-fold CV của train"
+        "ghi_chu": (f"{FEATURES[feat]['name']} + MultinomialNB; tham số chọn theo Macro F1 trên "
+                    "5-fold CV của train, ngưỡng chọn theo Macro F1 trên val"
                     + ("; sublinear_tf" if feat == "tfidf" else "")),
     }
     with open(PRED_DIR / f"{model_id}_info.json", "w", encoding="utf-8") as f:
@@ -136,12 +138,12 @@ def save_submission(model_id, feat, test, prob, best):
 def plot_threshold_curves(bests):
     fig, ax = plt.subplots(figsize=(7, 4))
     for feat, best in bests.items():
-        ax.plot(THRESHOLDS, best["curve"], marker=".", label=FEATURES[feat]["name"])
-        ax.axvline(best["best_threshold"], ls="--", lw=0.8, color=ax.lines[-1].get_color())
+        ax.plot(THRESHOLDS, best["val_curve"], marker=".", label=FEATURES[feat]["name"])
+        ax.axvline(best["threshold"], ls="--", lw=0.8, color=ax.lines[-1].get_color())
     ax.axvline(0.5, color="grey", lw=0.8, ls=":", label="ngưỡng mặc định 0.5")
     ax.set_xscale("log")
     ax.set_xlabel("Ngưỡng xác suất toxic (thang log)")
-    ax.set_ylabel("Macro F1 (5-fold CV trên train)")
+    ax.set_ylabel("Macro F1 trên val")
     ax.set_title("Naive Bayes: Macro F1 theo ngưỡng")
     ax.legend()
     fig.tight_layout()
@@ -192,11 +194,12 @@ def main():
         rows, best = tune(feat, train)
         tuning_rows += rows
         bests[feat] = best
-        t = best["best_threshold"]
 
         pipe = make_pipeline(feat, best["alpha"], best["ngram"], best["min_df"])
         pipe.fit(train[TEXT], train[LABEL])
         val_prob = pipe.predict_proba(val[TEXT])[:, 1]
+        t, _, best["val_curve"] = best_threshold(val[LABEL], val_prob)
+        best["threshold"] = t
         test_prob = pipe.predict_proba(test[TEXT])[:, 1]
 
         model_id = f"nb_{feat}"

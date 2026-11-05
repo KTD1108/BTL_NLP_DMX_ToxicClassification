@@ -1,7 +1,7 @@
 {
   "mo_hinh": "Multinomial Naive Bayes",
-  "threshold": 0.45,
-  "chon_nguong_tren": "train_cv",
+  "threshold": 0.15,
+  "chon_nguong_tren": "val",
   "sieu_tham_so": {
     "alpha": 1.0,
     "ngram_range": [
@@ -11,5 +11,5 @@
     "min_df": 1
   },
   "random_seed": 42,
-  "ghi_chu": "BoW + MultinomialNB; ngưỡng và tham số chọn theo Macro F1 trên 5-fold CV của train"
+  "ghi_chu": "BoW + MultinomialNB; tham số chọn theo Macro F1 trên 5-fold CV của train, ngưỡng chọn theo Macro F1 trên val"
 }

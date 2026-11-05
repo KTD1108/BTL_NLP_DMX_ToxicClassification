@@ -1,4 +1,5 @@
 {
+  "mo_hinh": "Linear SVM (FeatureUnion 3 nhánh)",
   "threshold": 0.0,
   "chon_nguong_tren": "mac_dinh",
   "sieu_tham_so": {
@@ -10,6 +11,5 @@
     "features": "FeatureUnion(Word TF-IDF + Char TF-IDF + Lexicon)"
   },
   "random_seed": 42,
-  "ghi_chu": "Mô hình tối ưu FeatureUnion 3 nhánh (Word+Char+Lexicon) + GridSearchCV C=0.1, weight={0:1,1:15}",
-  "mo_hinh": "Linear SVM (FeatureUnion 3 nhánh)"
+  "ghi_chu": "Mô hình tối ưu FeatureUnion 3 nhánh (Word+Char+Lexicon) + GridSearchCV C=0.1, weight={0:1,1:15}"
 }
