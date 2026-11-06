@@ -1,0 +1,16 @@
+﻿Mô hình A,Mô hình B,Chênh F1 Toxic (A-B),CI 95% thấp,CI 95% cao,CI đồng thời thấp,CI đồng thời cao,p bootstrap F1,p bootstrap F1 (Holm),F1 Toxic khác biệt (Bootstrap-Holm),A đúng - B sai,A sai - B đúng,p McNemar,p McNemar (Holm),Đúng/sai khác biệt (McNemar-Holm)
+BoW + Naive Bayes,TF-IDF + Naive Bayes,-0.0189,-0.0763,0.0355,-0.1048,0.0622,0.5217,1.0,Không,23,19,0.644,0.644,Không
+BoW + Naive Bayes,BoW + Linear SVM,-0.0092,-0.1236,0.1104,-0.184,0.1666,0.8741,1.0,Không,33,67,0.0009,0.0052,Có
+BoW + Naive Bayes,TF-IDF đơn + Linear SVM,-0.1127,-0.2047,-0.0179,-0.2481,0.0286,0.0208,0.1248,Không,18,61,0.0,0.0,Có
+BoW + Naive Bayes,FeatureUnion + Linear SVM,-0.1425,-0.2457,-0.0387,-0.2946,0.0124,0.0068,0.0612,Không,16,68,0.0,0.0,Có
+BoW + Naive Bayes,PhoBERT (vinai/phobert-base-v2),-0.3549,-0.4498,-0.259,-0.4983,-0.2101,0.0002,0.003,Có,13,88,0.0,0.0,Có
+TF-IDF + Naive Bayes,BoW + Linear SVM,0.0097,-0.1018,0.1252,-0.1629,0.1794,0.8677,1.0,Không,37,75,0.0004,0.0029,Có
+TF-IDF + Naive Bayes,TF-IDF đơn + Linear SVM,-0.0938,-0.19,0.0056,-0.2367,0.0577,0.0662,0.331,Không,23,70,0.0,0.0,Có
+TF-IDF + Naive Bayes,FeatureUnion + Linear SVM,-0.1237,-0.2214,-0.0262,-0.2736,0.0209,0.0146,0.1022,Không,17,73,0.0,0.0,Có
+TF-IDF + Naive Bayes,PhoBERT (vinai/phobert-base-v2),-0.336,-0.4269,-0.247,-0.4745,-0.2032,0.0002,0.003,Có,13,92,0.0,0.0,Có
+BoW + Linear SVM,TF-IDF đơn + Linear SVM,-0.1035,-0.1866,-0.0249,-0.2281,0.0221,0.012,0.096,Không,10,19,0.136,0.4081,Không
+BoW + Linear SVM,FeatureUnion + Linear SVM,-0.1333,-0.228,-0.0402,-0.2828,0.0043,0.0048,0.048,Có,10,28,0.0051,0.0204,Có
+BoW + Linear SVM,PhoBERT (vinai/phobert-base-v2),-0.3457,-0.4566,-0.2419,-0.5087,-0.1924,0.0002,0.003,Có,12,53,0.0,0.0,Có
+TF-IDF đơn + Linear SVM,FeatureUnion + Linear SVM,-0.0298,-0.1115,0.0528,-0.1614,0.1034,0.481,1.0,Không,11,20,0.1496,0.4081,Không
+TF-IDF đơn + Linear SVM,PhoBERT (vinai/phobert-base-v2),-0.2422,-0.3457,-0.1438,-0.3998,-0.0942,0.0002,0.003,Có,14,46,0.0,0.0003,Có
+FeatureUnion + Linear SVM,PhoBERT (vinai/phobert-base-v2),-0.2123,-0.32,-0.1115,-0.373,-0.0562,0.0004,0.0044,Có,15,38,0.0022,0.011,Có
