@@ -73,22 +73,22 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
 ## 4. Kết quả thực nghiệm
 
-> **Lưu ý:** Nhãn test đã được gán mù lại (85 mẫu Toxic, đổi 45 nhãn so với bản cũ 80 mẫu Toxic). Các dòng có ★ (Naive Bayes) đã chạy lại trên nhãn mới; PhoBERT và Linear SVM vẫn là số trên nhãn cũ, cần chạy lại để so sánh công bằng.
+> **Lưu ý:** Nhãn test đã được gán mù lại (85 mẫu Toxic, đổi 45 nhãn so với bản cũ 80 mẫu Toxic). Các dòng có ★ (Naive Bayes và Linear SVM) đã chạy lại trên nhãn mới; PhoBERT vẫn là số trên nhãn cũ, cần chạy lại để so sánh công bằng.
 
 Kết quả đánh giá độc lập trên tập Test (1.992 mẫu):
 
 | STT | Mô hình | Accuracy | Precision (Toxic) | Recall (Toxic) | F1 (Toxic) | Macro F1 | PR-AUC | TP | FP | FN |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1 | **PhoBERT (`vinai/phobert-base-v2`)** | **98.29%** | **78.05%** | **80.00%** | **0.7901** | **0.8906** | **0.7580** | **64** | 18 | **16** |
-| 2 | Linear SVM (TF-IDF đa nhánh) | 97.14% | 70.91% | 48.75% | 0.5778 | 0.7815 | 0.6495 | 39 | **16** | 41 |
-| 3 | Linear SVM (TF-IDF đơn) | 96.69% | 60.61% | 50.00% | 0.5479 | 0.7654 | 0.5574 | 40 | 26 | 40 |
+| 2 | Linear SVM (TF-IDF đa nhánh) ★ | 96.69% | 63.77% | 51.76% | 0.5714 | 0.7771 | 0.6026 | 44 | **25** | 41 |
+| 3 | Linear SVM (TF-IDF đơn) ★ | 96.29% | 58.46% | 44.71% | 0.5067 | 0.7437 | 0.5465 | 38 | 27 | 47 |
 | 4 | Naive Bayes (TF-IDF) ★ | 93.67% | 33.86% | 50.59% | 0.4057 | 0.6861 | 0.3777 | 43 | 84 | 42 |
-| 5 | Linear SVM (BoW) | 96.23% | 54.55% | 37.50% | 0.4444 | 0.7125 | 0.4810 | 30 | 25 | 50 |
+| 5 | Linear SVM (BoW) ★ | 96.03% | 55.56% | 35.29% | 0.4317 | 0.7056 | 0.4334 | 30 | 24 | 55 |
 | 6 | Naive Bayes (BoW) ★ | 93.88% | 33.63% | 44.71% | 0.3838 | 0.6758 | 0.2900 | 38 | 75 | 47 |
 
 ### Nhận xét kỹ thuật:
-* **PhoBERT (`vinai/phobert-base-v2`)** đạt hiệu năng dẫn đầu tuyệt đối ở mọi chỉ số: Accuracy (98.29%), Precision (78.05%), Recall (80.00%), F1 Toxic (0.7901) và Macro F1 (0.8906). Nhờ kiến trúc Transformer tiền huấn luyện chuyên biệt cho tiếng Việt, PhoBERT hiểu sâu ngữ cảnh câu dài, từ lóng và sắc thái chê bai gián tiếp, bắt đúng 64/80 ca vi phạm và chỉ bỏ sót 16 ca.
-* **Linear SVM đa nhánh đặc trưng (FeatureUnion)** là mô hình truyền thống tốt nhất với Precision đạt 70.91%, số ca báo nhầm thấp nhất (chỉ 16 ca FP trên 1.912 câu sạch). Đây là lựa chọn tối ưu về mặt chi phí tính toán khi cần triển khai nhẹ trên CPU.
+* **PhoBERT (`vinai/phobert-base-v2`)** đạt hiệu năng dẫn đầu tuyệt đối ở mọi chỉ số trên nhãn cũ (chờ đánh giá lại trên nhãn test mới).
+* **Linear SVM đa nhánh đặc trưng (FeatureUnion)** trên nhãn mới tiếp tục là mô hình truyền thống tốt nhất: F1 Toxic đạt 0.5714, Macro F1 đạt 0.7771, Precision đạt 63.77%, bắt đúng 44/85 ca toxic và số ca báo nhầm thấp nhất trong các mô hình chạy trên CPU (chỉ 25 ca FP so với 75-84 ca của Naive Bayes).
 * **Naive Bayes** có ưu thế tốc độ huấn luyện và suy luận cực nhanh. Trên nhãn test gán mù, NB TF-IDF đạt Recall 50.59% (43/85) và F1 Toxic 0.4057, giảm so với nhãn cũ (F1 0.4541), nhiều khả năng do nhãn test gán mù không còn bám theo cách gán của Gemini như nhãn train; tỷ lệ báo nhầm (84 FP) vẫn cao hơn SVM và PhoBERT.
 
 ---
