@@ -46,20 +46,57 @@ Nhãn dựa vào **cách dùng ngôn từ và thái độ** của người viế
 
 ## Quy trình gán nhãn
 
+### Train / Validation
 1. Gemini gán theo luật này cho toàn bộ câu 1–3 sao và mọi câu đang là toxic.
 2. Người rà soát từng câu có nhãn Gemini khác nhãn trước đó và chốt nhãn cuối.
 3. Câu 4–5 sao mặc định là 0 (tỷ lệ toxic ở nhóm này gần 0%).
 
+### Test (gán mù lại)
+Nhãn test cũ được chốt khi người rà soát đã thấy nhãn Gemini nên không độc lập
+(Kappa nhãn test cũ với Gemini lên tới 0,98). Vì vậy toàn bộ 1.992 câu test được gán mù lại:
+1. Xáo ngẫu nhiên, lấy 200 câu chung cho cả 4 thành viên, 1.792 câu còn lại chia đều 4 phần
+   (mỗi người 648 câu, không biết câu nào là câu chung).
+2. File gán chỉ có số sao và nội dung, không có nhãn cũ hay nhãn Gemini; thứ tự xáo riêng từng người.
+3. Câu riêng lấy nhãn của người gán; câu chung lấy theo đa số, 4 câu hòa 2–2 lấy theo nhãn test cũ.
+4. Kết quả: 85 câu toxic (4,27%), đổi 45 nhãn so với test cũ (25 câu 0→1, 20 câu 1→0).
+
+Script: `experiments/test_blind/make_test_blind.py` (`make` / `score` / `apply`); file gán của
+từng người ở `data/test_blind/`.
+
 Cột `nguon_nhan`:
-- `human`: nhãn do thành viên nhóm gán tay hoặc đã rà soát lại (toàn bộ câu toxic thuộc nhóm này).
+- `human`: nhãn do thành viên nhóm gán tay hoặc đã rà soát lại (toàn bộ câu toxic và toàn bộ tập test).
 - `llm`: nhãn do Gemini gán theo luật hoặc mặc định non-toxic (câu 4–5 sao), không có người rà riêng từng câu.
 
-## Độ tin cậy nhãn (Cohen's Kappa)
+## Độ tin cậy nhãn
+
+### Gán mù tập test: 4 thành viên trên 200 câu chung
+
+| Chỉ số | Giá trị |
+|---|---|
+| Fleiss' Kappa (4 người) | **0,68** |
+| Cohen's Kappa trung bình 6 cặp | 0,67 (từ 0,57 đến 0,77) |
+| Đồng ý thuần trung bình các cặp | 96,7% |
+| Cả 4 người cùng nhãn | 94,0% |
+
+| Cặp | Kappa | Đồng ý thuần | Đồng ý trên câu toxic |
+|---|---|---|---|
+| TV1 – TV2 | 0,75 | 97,0% | 76,9% |
+| TV1 – TV3 | 0,77 | 97,5% | 78,3% |
+| TV1 – TV4 | 0,62 | 96,0% | 63,6% |
+| TV2 – TV3 | 0,65 | 96,5% | 66,7% |
+| TV2 – TV4 | 0,69 | 97,0% | 70,0% |
+| TV3 – TV4 | 0,57 | 96,5% | 58,8% |
+
+Ghi chú: toxic chỉ ~5% nên đồng ý thuần luôn cao; Kappa và "đồng ý trên câu toxic"
+(2·số câu cùng gán 1 / tổng số câu mỗi người gán 1) phản ánh đúng hơn. Kappa tính trên nhãn
+gán mù lần đầu của mỗi người (TV2 có chỉnh một số câu sau đó; nhãn đã chỉnh dùng làm nhãn cuối).
+
+### Các lần đo trước
 
 | So sánh | Số câu | Kappa |
 |---|---|---|
 | Hai người gán chéo | 400 | 0,49 |
 | Nhãn chốt của nhóm với Gemini (test cũ) | 2.000 | 0,54 |
 | Người rà soát với Gemini (gán mù) | 100 | 0,63 |
-| Người rà soát với Gemini (test cũ) | 800 | 0,75 |
+| Người rà soát với Gemini (test cũ, không mù) | 800 | 0,75 |
 | Gemini lần 1 với Gemini lần 2 | 1.002 | 0,92 |

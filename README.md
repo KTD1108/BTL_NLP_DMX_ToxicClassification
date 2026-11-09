@@ -37,11 +37,13 @@ Từ dữ liệu gốc trong `raw.zip`, dữ liệu được xử lý qua quy tr
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **Train** | [`data/train.csv`](./data/train.csv) | **7.011** | 6.710 | 301 | 4.29% | Huấn luyện mô hình |
 | **Validation** | [`data/val.csv`](./data/val.csv) | **997** | 952 | 45 | 4.51% | Tối ưu siêu tham số & hiệu chuẩn ngưỡng |
-| **Test** | [`data/test.csv`](./data/test.csv) | **1.992** | 1.912 | 80 | 4.02% | Đánh giá kiểm thử độc lập |
+| **Test** | [`data/test.csv`](./data/test.csv) | **1.992** | 1.907 | 85 | 4.27% | Đánh giá kiểm thử độc lập |
 
 *Cấu trúc các cột chuẩn hóa:* `review_id`, `product_id`, `nganh_hang`, `so_sao`, `noi_dung_goc`, `noi_dung_tien_xu_ly`, `nguon_nhan`, `label`.
 
-*Gán nhãn:* Gemini gán theo [`LUAT_GAN_NHAN.md`](./LUAT_GAN_NHAN.md) cho toàn bộ câu 1–3 sao, người rà soát chốt mọi câu đổi nhãn; câu 4–5 sao mặc định non-toxic.
+*Gán nhãn:*
+* **Train / Validation:** Gemini gán theo [`LUAT_GAN_NHAN.md`](./LUAT_GAN_NHAN.md) cho toàn bộ câu 1–3 sao, người rà soát chốt mọi câu đổi nhãn; câu 4–5 sao mặc định non-toxic.
+* **Test:** 4 thành viên gán mù lại toàn bộ 1.992 câu (không xem nhãn cũ, nhãn Gemini), mỗi người ~648 câu, trong đó 200 câu chung để đo đồng thuận. Đồng thuận giữa 4 người: **Fleiss' κ = 0,68**, đồng ý thuần 96,7%.
 
 ---
 
@@ -70,6 +72,8 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 ---
 
 ## 4. Kết quả thực nghiệm
+
+> **Lưu ý:** Bảng dưới đây được tính trên nhãn test trước khi gán mù lại (80 mẫu Toxic). Nhãn test hiện tại có 85 mẫu Toxic (đổi 45 nhãn); cần chạy lại các mô hình để cập nhật.
 
 Kết quả đánh giá độc lập trên tập Test (1.992 mẫu, 80 mẫu Toxic):
 
