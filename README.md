@@ -73,23 +73,23 @@ Dự án triển khai và đối sánh 3 nhóm phương pháp:
 
 ## 4. Kết quả thực nghiệm
 
-> **Lưu ý:** Bảng dưới đây được tính trên nhãn test trước khi gán mù lại (80 mẫu Toxic). Nhãn test hiện tại có 85 mẫu Toxic (đổi 45 nhãn); cần chạy lại các mô hình để cập nhật.
+> **Lưu ý:** Nhãn test đã được gán mù lại (85 mẫu Toxic, đổi 45 nhãn so với bản cũ 80 mẫu Toxic). Các dòng có ★ (Naive Bayes) đã chạy lại trên nhãn mới; PhoBERT và Linear SVM vẫn là số trên nhãn cũ, cần chạy lại để so sánh công bằng.
 
-Kết quả đánh giá độc lập trên tập Test (1.992 mẫu, 80 mẫu Toxic):
+Kết quả đánh giá độc lập trên tập Test (1.992 mẫu):
 
 | STT | Mô hình | Accuracy | Precision (Toxic) | Recall (Toxic) | F1 (Toxic) | Macro F1 | PR-AUC | TP | FP | FN |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1 | **PhoBERT (`vinai/phobert-base-v2`)** | **98.29%** | **78.05%** | **80.00%** | **0.7901** | **0.8906** | **0.7580** | **64** | 18 | **16** |
 | 2 | Linear SVM (TF-IDF đa nhánh) | 97.14% | 70.91% | 48.75% | 0.5778 | 0.7815 | 0.6495 | 39 | **16** | 41 |
 | 3 | Linear SVM (TF-IDF đơn) | 96.69% | 60.61% | 50.00% | 0.5479 | 0.7654 | 0.5574 | 40 | 26 | 40 |
-| 4 | Naive Bayes (TF-IDF) | 94.33% | 37.01% | 58.75% | 0.4541 | 0.7121 | 0.4530 | 47 | 80 | 33 |
+| 4 | Naive Bayes (TF-IDF) ★ | 93.67% | 33.86% | 50.59% | 0.4057 | 0.6861 | 0.3777 | 43 | 84 | 42 |
 | 5 | Linear SVM (BoW) | 96.23% | 54.55% | 37.50% | 0.4444 | 0.7125 | 0.4810 | 30 | 25 | 50 |
-| 6 | Naive Bayes (BoW) | 94.53% | 37.17% | 52.50% | 0.4352 | 0.7032 | 0.3541 | 42 | 71 | 38 |
+| 6 | Naive Bayes (BoW) ★ | 93.88% | 33.63% | 44.71% | 0.3838 | 0.6758 | 0.2900 | 38 | 75 | 47 |
 
 ### Nhận xét kỹ thuật:
 * **PhoBERT (`vinai/phobert-base-v2`)** đạt hiệu năng dẫn đầu tuyệt đối ở mọi chỉ số: Accuracy (98.29%), Precision (78.05%), Recall (80.00%), F1 Toxic (0.7901) và Macro F1 (0.8906). Nhờ kiến trúc Transformer tiền huấn luyện chuyên biệt cho tiếng Việt, PhoBERT hiểu sâu ngữ cảnh câu dài, từ lóng và sắc thái chê bai gián tiếp, bắt đúng 64/80 ca vi phạm và chỉ bỏ sót 16 ca.
 * **Linear SVM đa nhánh đặc trưng (FeatureUnion)** là mô hình truyền thống tốt nhất với Precision đạt 70.91%, số ca báo nhầm thấp nhất (chỉ 16 ca FP trên 1.912 câu sạch). Đây là lựa chọn tối ưu về mặt chi phí tính toán khi cần triển khai nhẹ trên CPU.
-* **Naive Bayes** có ưu thế tốc độ huấn luyện và suy luận cực nhanh, đạt Recall tương đối tốt (~58.75%) khi tinh chỉnh ngưỡng trên tập validation, nhưng tỷ lệ báo nhầm (FP) còn cao hơn so với SVM và PhoBERT.
+* **Naive Bayes** có ưu thế tốc độ huấn luyện và suy luận cực nhanh. Trên nhãn test gán mù, NB TF-IDF đạt Recall 50.59% (43/85) và F1 Toxic 0.4057, giảm so với nhãn cũ (F1 0.4541), nhiều khả năng do nhãn test gán mù không còn bám theo cách gán của Gemini như nhãn train; tỷ lệ báo nhầm (84 FP) vẫn cao hơn SVM và PhoBERT.
 
 ---
 
