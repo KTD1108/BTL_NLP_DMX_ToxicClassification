@@ -1,12 +1,13 @@
 {
   "nguoi_phu_trach": "TV3",
-  "threshold": 0.0060386634431779385,
+  "mo_hinh": "PhoBERT (vinai/phobert-base-v2)",
+  "threshold": 0.021739594638347626,
   "chon_nguong_tren": "val",
   "sieu_tham_so": {
     "backbone": "vinai/phobert-base-v2",
     "training_mode": "End-to-End Fine-Tuning (AdamW, CUDA)",
     "epochs_toi_da": 5,
-    "epoch_tot_nhat": 5,
+    "epoch_tot_nhat": 4,
     "early_stopping_patience": 2,
     "lr": 2e-05,
     "warmup": 0.1,
@@ -16,21 +17,20 @@
     "input_mode": "pyvi",
     "normalize_teencode": true
   },
-  "random_seed": 13,
-  "ghi_chu": "Fine-tune PhoBERT với các seed [42, 13, 7]; nộp seed 13 (PR-AUC val cao nhất). Test trung bình qua các seed: F1 toxic 0.7316 ± 0.0436, PR-AUC 0.7738 ± 0.0295.",
+  "random_seed": 7,
+  "ghi_chu": "Fine-tune PhoBERT với các seed [42, 13, 7]; nộp seed 7 (PR-AUC val cao nhất). Test trung bình qua các seed: F1 toxic 0.6392 ± 0.0196, PR-AUC 0.6443 ± 0.0029.",
   "metrics_test": {
-    "accuracy": 0.9829317269076305,
-    "precision_toxic": 0.7804878048780488,
-    "recall_toxic": 0.8,
-    "f1_toxic": 0.7901234567901234,
-    "f1_macro": 0.8906137953757001,
-    "pr_auc": 0.7580213217948435,
-    "roc_auc": 0.9399156642259414,
-    "cohen_kappa": 0.7812290040828983,
-    "tp": 64,
-    "fp": 18,
-    "fn": 16,
-    "tn": 1894
-  },
-  "mo_hinh": "PhoBERT (vinai/phobert-base-v2)"
+    "accuracy": 0.9703815261044176,
+    "precision_toxic": 0.6756756756756757,
+    "recall_toxic": 0.5882352941176471,
+    "f1_toxic": 0.6289308176100629,
+    "f1_macro": 0.8067529905043778,
+    "pr_auc": 0.6483828567098938,
+    "roc_auc": 0.9622690397606342,
+    "cohen_kappa": 0.6135828609755777,
+    "tp": 50,
+    "fp": 24,
+    "fn": 35,
+    "tn": 1883
+  }
 }

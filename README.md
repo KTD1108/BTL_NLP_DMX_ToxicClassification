@@ -115,7 +115,7 @@ python 3b_train_svm.py
 python 4_model_evaluation.py
 ```
 
-Để huấn luyện và tinh chỉnh mô hình **PhoBERT** trên GPU (Google Colab hoặc Kaggle GPU T4), sử dụng notebook chuẩn của dự án: [`btl-nlpv2.ipynb`](./btl-nlpv2.ipynb). Notebook sẽ tự động lưu kết quả dự đoán đạt chuẩn vào `results/predictions/phobert.csv` và `phobert_info.json`.
+Để huấn luyện và tinh chỉnh mô hình **PhoBERT** trên Kaggle (GPU T4 hoặc P100), sử dụng notebook chuẩn của dự án: [`phobert.ipynb`](./phobert.ipynb). Notebook sẽ tự động lưu kết quả dự đoán đạt chuẩn vào `results/predictions/phobert.csv` và `phobert_info.json`.
 
 ---
 
@@ -138,7 +138,7 @@ python 4_model_evaluation.py
 ├── 3a_train_naive_bayes.py           # Huấn luyện Naive Bayes
 ├── 3b_train_svm.py                   # Huấn luyện Linear SVM
 ├── 4_model_evaluation.py             # Đánh giá đối sánh và kiểm định thống kê
-├── btl-nlpv2.ipynb                   # Notebook huấn luyện và đánh giá PhoBERT (Colab/Kaggle/Local)
+├── phobert.ipynb                     # Notebook huấn luyện và đánh giá PhoBERT (Kaggle)
 ├── LUAT_GAN_NHAN.md                  # Luật gán nhãn và độ tin cậy nhãn
 ├── nlp_utils.py                      # Module tiền xử lý văn bản tiếng Việt
 ├── requirements.txt                  # Danh sách thư viện phụ thuộc
